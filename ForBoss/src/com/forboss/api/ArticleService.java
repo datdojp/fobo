@@ -28,6 +28,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
+import com.forboss.ForBossViewPagerFragmentActivity;
 import com.forboss.api.exception.ServiceException;
 import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
@@ -169,6 +170,7 @@ public class ArticleService extends IntentService {
 				category = aCate;
 				doSync();
 			}
+			ForBossViewPagerFragmentActivity.getInstance().refreshArticleList();
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), "Problem with sync");
 			e.printStackTrace();

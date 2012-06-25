@@ -1,12 +1,12 @@
 package com.forboss.utils;
 
 import java.io.FileNotFoundException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,30 +20,29 @@ import com.forboss.R;
 import com.forboss.custom.PullToRefreshListView;
 import com.forboss.custom.PullToRefreshListView.OnRefreshListener;
 import com.forboss.data.model.Article;
-import com.forboss.data.utils.DatabaseHelper;
-import com.j256.ormlite.dao.Dao;
 
 public class ArticleListBuilder {
 	private Context context;
 	private LayoutInflater inflater;
-	private String category;
-	
+
 	private View root;
 	private PullToRefreshListView ptrNewsList;
-	private List<Article> ptrNewsListData = new ArrayList<Article>();
+	private List<Article> ptrNewsListData;
 	private ArticleAdapter ptrNewsListAdapter;
 
-	public View build(Context context, LayoutInflater inflater, ViewGroup container, String category) {
+	private Handler refreshHandler;
+
+	public View build(Context context, LayoutInflater inflater, ViewGroup container, List<Article> data) {
 		this.context = context;
 		this.inflater = inflater;
-		this.category = category;
-		
+		this.ptrNewsListData = data;
+
 		this.root = inflater.inflate(R.layout.article_list, container, false);
 		ptrNewsList = (PullToRefreshListView) root.findViewById(R.id.newsList);
 		ptrNewsList.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				
+
 			}
 		});
 		ptrNewsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -53,28 +52,23 @@ public class ArticleListBuilder {
 				view.performClick();
 			}
 		});
-		
-		refresh();
-		
-		return this.root;
-	}
-	
-	public void refresh() {
-		try {
-			if (ptrNewsListAdapter == null) {
-				Dao<Article, String> articleDao = DatabaseHelper.getHelper(context).getArticleDao();
-				Article sampleArticle = new Article();
-				sampleArticle.setCategory(category);
-				ptrNewsListData = articleDao.queryForMatching(sampleArticle);
-				
-				ptrNewsListAdapter = new ArticleAdapter(context, ptrNewsListData);
-				ptrNewsList.setAdapter(ptrNewsListAdapter);
-			} else {
+		ptrNewsListAdapter = new ArticleAdapter(context, ptrNewsListData);
+		ptrNewsList.setAdapter(ptrNewsListAdapter);
+
+		refreshHandler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
 				ptrNewsListAdapter.notifyDataSetChanged();
 			}
-		} catch (SQLException ex) {
-			Log.e(this.getClass().getName(), ex.getMessage());
-			ForBossUtils.alert(context, "Cơ sở dữ liệu có vấn đề. Hãy khởi động lại ứng dụng.");
+		};
+
+		return this.root;
+	}
+
+	public void refresh() {
+		if (refreshHandler != null) {
+			Message message = refreshHandler.obtainMessage();
+			refreshHandler.sendMessage(message);
 		}
 	}
 
@@ -108,7 +102,7 @@ public class ArticleListBuilder {
 			// set title
 			TextView title = (TextView) view.findViewById(R.id.title);
 			title.setText(article.getTitle());
-			
+
 			return view;
 		}
 	}
@@ -120,6 +114,6 @@ public class ArticleListBuilder {
 	public void setPtrNewsListData(List<Article> ptrNewsListData) {
 		this.ptrNewsListData = ptrNewsListData;
 	}
-	
-	
+
+
 }

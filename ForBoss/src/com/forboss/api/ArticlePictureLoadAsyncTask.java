@@ -5,10 +5,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import com.forboss.ForBossViewPagerFragmentActivity;
 import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.utils.ArticleListBuilder;
@@ -23,41 +26,34 @@ public class ArticlePictureLoadAsyncTask extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		// get list of articles that need to load pictures
-		List<ArticleListBuilder> articleListBuilderList = (List<ArticleListBuilder>) ForBossUtils.getBundleData("articleListBuilderList");
-		List<Article> articlesNeedToLoadPictures = new ArrayList<Article>();
-		for (ArticleListBuilder aBuilder : articleListBuilderList) {
-			for (Article anArticle : aBuilder.getPtrNewsListData()) {
-				if (anArticle.getThumbnail() != null && anArticle.getPictureLocation() == null) {
-					articlesNeedToLoadPictures.add(anArticle);
-				}
-			}
+		Dao<Article, String> articleDao;
+		try {
+			articleDao = DatabaseHelper.getHelper(this).getArticleDao();
+		} catch (SQLException e1) {
+			ForBossUtils.alert(this, "Cơ sở dữ liệu bị lỗi. Hãy khởi động lại ứng dụng.");
+			e1.printStackTrace();
+			return;
 		}
-
-		if (articlesNeedToLoadPictures != null) {
-			try {
-				Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
-				for (Article anArticle : articlesNeedToLoadPictures) {
-					// double check the picture location
-					if (anArticle.getThumbnail() != null && anArticle.getPictureLocation() == null) {
+		for(String aCate : ForBossUtils.getCategoryList()) {
+			for(Article anArticle : ForBossViewPagerFragmentActivity.cateDataMapping.get(aCate)) {
+				if (anArticle.getThumbnail() != null && anArticle.getPictureLocation() == null) {
+					try {
 						String pictureLocation = "article_" + anArticle.getId();
-						ForBossUtils.downloadAndSaveToInternalStorage(anArticle.getThumbnail(), pictureLocation, this);
+						ForBossUtils.downloadAndSaveToInternalStorage(
+								StringUtils.replace(anArticle.getThumbnail(), " ", "%20"), 
+								pictureLocation, this);
 						anArticle.setPictureLocation(pictureLocation);
 						articleDao.update(anArticle);
+					} catch (IOException e) {
+						Log.e(this.getClass().getName(), e.getMessage());
+						e.printStackTrace();
+					} catch (SQLException e) {
+						Log.e(this.getClass().getName(), e.getMessage());
+						e.printStackTrace();
 					}
 				}
-			} catch (IOException e) {
-				Log.e(this.getClass().getName(), e.getMessage());
-				e.printStackTrace();
-			} catch (SQLException e) {
-				Log.e(this.getClass().getName(), e.getMessage());
-				e.printStackTrace();
 			}
-		}
-		
-		// notify change to builder
-		for (ArticleListBuilder aBuilder : articleListBuilderList) {
-			aBuilder.refresh();
+			ForBossViewPagerFragmentActivity.cateBuilderMapping.get(aCate).refresh();
 		}
 	}
 

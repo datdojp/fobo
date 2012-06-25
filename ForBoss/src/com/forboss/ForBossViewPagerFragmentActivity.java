@@ -1,6 +1,8 @@
 package com.forboss;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -32,8 +35,15 @@ import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.fragment.ArticleListFragment;
 import com.forboss.utils.ArticleListBuilder;
 import com.forboss.utils.ForBossUtils;
+import com.j256.ormlite.dao.Dao;
 
 public class ForBossViewPagerFragmentActivity extends FragmentActivity {
+	// class instance
+	private static ForBossViewPagerFragmentActivity instance;
+	public static ForBossViewPagerFragmentActivity getInstance() {
+		return instance;
+	}
+	
 	// constant
 	private static final String APP_PREF = "forboss";	
 	private static final String USER_EMAIL = "user.email";
@@ -48,16 +58,23 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 	// article
 	private ViewGroup articleViewPagerIndicator;
-	private List<ArticleListBuilder> articleListBuilderList = new ArrayList<ArticleListBuilder>();
+	public static Map<String, ArticleListBuilder> cateBuilderMapping = new HashMap<String, ArticleListBuilder>();
+	public static Map<String, List<Article>> cateDataMapping = new HashMap<String, List<Article>>();
 	
 	// data
 	private Map<String, List<Article>> articleData;
 	private List<Event> eventData;
+	
+	// handlers
+	private Handler afterSyncArticleHandler;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		super.setContentView(R.layout.main);
+		
+		// set the instance
+		instance = this;
 
 		// get wrapper from layout
 		mainWrapper = (ViewGroup) findViewById(R.id.mainWrapper);
@@ -68,21 +85,42 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		// all initializations
 		initLoginLayout();
 		initTabHeader();
+		
+		afterSyncArticleHandler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				introLayoutWrapper.setVisibility(View.GONE);
+				try {
+					initArticleList();
+					syncArticlePicture();
+				} catch (SQLException e) {
+					Log.e(this.getClass().getName(), e.getMessage());
+					e.printStackTrace();
+				}
+
+			}
+		};
 	}
 
-	private void initArticleList() {
+	private void initArticleList() throws SQLException {
 		articleListWrapper = findViewById(R.id.articleListWrapper);
 		articleViewPagerIndicator = (ViewGroup) articleListWrapper.findViewById(R.id.viewPagerIndicator);
-
+		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
+		
 		List<Fragment> fragments =  new ArrayList<Fragment>();
 		for(String aCate : ForBossUtils.getCategoryList()) {
+			Article sampleArticle = new Article();
+			sampleArticle.setCategory(aCate);
+			List<Article> data = articleDao.queryForMatching(sampleArticle);
+			
 			ArticleListFragment aFragment = (ArticleListFragment) Fragment.instantiate(this, ArticleListFragment.class.getName());
 			aFragment.setContext(this);
-			aFragment.setCategory(aCate);
+			aFragment.setData(data);
 			fragments.add(aFragment);
 
-			// store the builder
-			articleListBuilderList.add(aFragment.getArticleListBuilder());
+			// store the builder and data
+			cateBuilderMapping.put(aCate, aFragment.getArticleListBuilder());
+			cateDataMapping.put(aCate, data);
 			
 			// add indicator
 			ImageView anIndicator = new ImageView(this);
@@ -215,7 +253,6 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 	private void syncArticlePicture() {
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ArticlePictureLoadAsyncTask.class);
-		ForBossUtils.putBundleData("articleListBuilderList", articleListBuilderList);
 		this.startService(intent);
 	}
 	
@@ -223,17 +260,15 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	protected void onStart() {
 		super.onStart();
 		syncArticleContent();
-		introLayoutWrapper.setVisibility(View.GONE);
-		initArticleList();
-		syncArticlePicture();
 	}
 
-	public void updateArticleList(String category) {
-
-	}
-
-	public void updateEventList() {
-
+	private boolean isInitArticleList = false;
+	public void refreshArticleList() {
+		if (!isInitArticleList) {
+			Message message = afterSyncArticleHandler.obtainMessage();
+			afterSyncArticleHandler.sendMessage(message);
+			isInitArticleList = true;
+		}
 	}
 
 }
