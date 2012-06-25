@@ -1,21 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/navHeaderContainer"
+    android:id="@+id/tabHeaderWrapper"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="-10dp"
-    android:orientation="vertical" >
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/contentButton"
-        android:text="Nội dung" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/linkedin" />
 
-    <Button
-        android:id="@+id/eventButton"
-        android:text="Sự kiện" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right" >
 
-    <Button
-        android:id="@+id/moreButton"
-        android:text="More" />
+        <ImageButton
+            android:id="@+id/contentButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:src="@drawable/but_content" />
+
+        <ImageButton
+            android:id="@+id/eventButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:src="@drawable/but_event" />
+
+        <ImageButton
+            android:id="@+id/moreButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:src="@drawable/but_more" />
+    </LinearLayout>
 
 </LinearLayout>

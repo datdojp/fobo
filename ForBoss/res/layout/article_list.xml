@@ -3,19 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <com.misfit.celeste.custom.PullToRefreshListView
+    <com.forboss.custom.PullToRefreshListView
         android:id="@+id/newsList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#00000000"
         android:cacheColorHint="#00000000"
         android:divider="#00000000" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:adjustViewBounds="true"
-        android:background="@drawable/article_list_bottom_blur_drawable" />
 
 </RelativeLayout>
