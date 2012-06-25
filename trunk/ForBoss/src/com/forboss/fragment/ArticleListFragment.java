@@ -1,5 +1,7 @@
 package com.forboss.fragment;
 
+import java.util.List;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,17 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.forboss.data.model.Article;
 import com.forboss.utils.ArticleListBuilder;
 
 public class ArticleListFragment extends Fragment {
 	private Context context;
 	private ArticleListBuilder articleListBuilder = new ArticleListBuilder();
-	private String category;
+	private List<Article> data;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return articleListBuilder.build(context, inflater, container, category);
+		View result = articleListBuilder.build(context, inflater, container, data);
+		return result;
 	}
 
 	public ArticleListBuilder getArticleListBuilder() {
@@ -36,12 +40,11 @@ public class ArticleListFragment extends Fragment {
 		this.context = context;
 	}
 
-	public String getCategory() {
-		return category;
+	public List<Article> getData() {
+		return data;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setData(List<Article> data) {
+		this.data = data;
 	}
-	
 }
