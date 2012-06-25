@@ -64,8 +64,8 @@ public class PullToRefreshListView extends ListView{
 	}
 	
 	public static enum FetchMode {
-		FETCH_LATER_NEWS,
-		FETCH_OLDER_NEWS,
+		FETCH_LATER,
+		FETCH_OLDER,
 		DO_NOTHING
 	}
 
@@ -174,9 +174,9 @@ public class PullToRefreshListView extends ListView{
 	 */
 	public void onRefreshComplete(){
 		state = State.PULL_TO_REFRESH;
-		if (fetchMode == FetchMode.FETCH_LATER_NEWS) {
+		if (fetchMode == FetchMode.FETCH_LATER) {
 			resetHeader();
-		} else if (fetchMode == FetchMode.FETCH_OLDER_NEWS) {
+		} else if (fetchMode == FetchMode.FETCH_OLDER) {
 			resetFooter();
 		}
 		
@@ -262,9 +262,9 @@ public class PullToRefreshListView extends ListView{
 			public void onScrollStateChanged(AbsListView absListView, int scrollState) {
 				if( getAdapter().getCount() > 0 
 						&& getLastVisiblePosition() == getAdapter().getCount() - 1 
-						&& fetchMode != FetchMode.FETCH_OLDER_NEWS ){
+						&& fetchMode != FetchMode.FETCH_OLDER ){
 		        	if (onRefreshListener != null) {
-		        		fetchMode = FetchMode.FETCH_OLDER_NEWS;
+		        		fetchMode = FetchMode.FETCH_OLDER;
 
 		        		//display the footer
 		        		footerContainer.setVisibility(View.VISIBLE);
@@ -495,7 +495,7 @@ public class PullToRefreshListView extends ListView{
 				if(onRefreshListener == null){
 					setState(State.PULL_TO_REFRESH);
 				}else{
-					fetchMode = FetchMode.FETCH_LATER_NEWS;
+					fetchMode = FetchMode.FETCH_LATER;
 					onRefreshListener.onRefresh();
 				}
 

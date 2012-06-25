@@ -10,9 +10,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -39,14 +41,11 @@ import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.forboss.ForBossApplication;
-import com.forboss.R;
 
 public class ForBossUtils {
 	private static Map<String, Object> bundleData = new HashMap<String, Object>();
@@ -374,5 +373,19 @@ public class ForBossUtils {
 		String configString = getConfig(configKey);
 		String[] splitted = StringUtils.split(configString, ",");
 		return splitted;
+	}
+	
+	private static List<String> categoryList;
+	public static List<String> getCategoryList() {
+		if (categoryList == null) {
+			categoryList = new ArrayList<String>();
+			String categoryConfig = getConfig("categories");
+			String[] splitted = categoryConfig.trim().split(",");
+			for(int i = 0; i < splitted.length; i++) {
+				categoryList.add(splitted[i].trim());
+			}
+		}
+		
+		return categoryList;
 	}
 }

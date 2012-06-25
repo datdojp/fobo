@@ -1,34 +1,52 @@
 package com.forboss.data.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
+import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 
 public class Article implements Serializable {
+	@SerializedName("ID")
 	@DatabaseField(id=true)
 	private String id;
 	
-	@DatabaseField
-	private String category;
-	
+	@SerializedName("Title")
 	@DatabaseField
 	private String title;
 	
+	@SerializedName("Thumbnail")
 	@DatabaseField
-	private String content;
+	private String thumbnail;
+	
+	@SerializedName("Body")
+	@DatabaseField
+	private String body;
+	
+	@SerializedName("Category")
+	@DatabaseField
+	private String category;
+	
+	@SerializedName("Views")
+	@DatabaseField
+	private int views;
+	
+	@SerializedName("Likes")
+	@DatabaseField
+	private int likes;
+	
+	@SerializedName("Link")
+	@DatabaseField
+	private String link;
+	
+	@SerializedName("CreatedTime")
+	@DatabaseField
+	private long createdTime;
 	
 	@DatabaseField
-	private Integer nLikes;
+	private int isLike;
 	
 	@DatabaseField
-	private Integer nReads;
-	
-	@DatabaseField
-	private Date dateTime;
-	
-	@DatabaseField
-	private Boolean isLike;
+	private String pictureLocation;
 
 	public String getId() {
 		return id;
@@ -54,43 +72,67 @@ public class Article implements Serializable {
 		this.title = title;
 	}
 
-	public String getContent() {
-		return content;
+	public String getThumbnail() {
+		return thumbnail;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
 	}
 
-	public Integer getnLikes() {
-		return nLikes;
+	public String getBody() {
+		return body;
 	}
 
-	public void setnLikes(Integer nLikes) {
-		this.nLikes = nLikes;
+	public void setBody(String body) {
+		this.body = body;
 	}
 
-	public Integer getnReads() {
-		return nReads;
+	public int getViews() {
+		return views;
 	}
 
-	public void setnReads(Integer nReads) {
-		this.nReads = nReads;
+	public void setViews(int views) {
+		this.views = views;
 	}
 
-	public Date getDateTime() {
-		return dateTime;
+	public int getLikes() {
+		return likes;
 	}
 
-	public void setDateTime(Date dateTime) {
-		this.dateTime = dateTime;
+	public void setLikes(int likes) {
+		this.likes = likes;
 	}
 
-	public Boolean getIsLike() {
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
+	}
+
+	public long getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(long createdTime) {
+		this.createdTime = createdTime;
+	}
+
+	public int getIsLike() {
 		return isLike;
 	}
 
-	public void setIsLike(Boolean isLike) {
+	public void setIsLike(int isLike) {
 		this.isLike = isLike;
+	}
+
+	public String getPictureLocation() {
+		return pictureLocation;
+	}
+
+	public void setPictureLocation(String pictureLocation) {
+		this.pictureLocation = pictureLocation;
 	}
 }
