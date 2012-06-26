@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,13 +31,13 @@ import android.widget.TextView;
 import com.forboss.adapter.PagerAdapter;
 import com.forboss.api.ArticlePictureLoadAsyncTask;
 import com.forboss.api.ArticleService;
-import com.forboss.api.SendAsyncTask;
 import com.forboss.data.model.Article;
 import com.forboss.data.model.Event;
 import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.fragment.ArticleListFragment;
 import com.forboss.utils.ArticleListBuilder;
 import com.forboss.utils.ForBossUtils;
+import com.forboss.utils.URL;
 import com.j256.ormlite.dao.Dao;
 
 public class ForBossViewPagerFragmentActivity extends FragmentActivity {
@@ -43,10 +46,11 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	public static ForBossViewPagerFragmentActivity getInstance() {
 		return instance;
 	}
-	
+
 	// constant
 	private static final String APP_PREF = "forboss";	
 	private static final String USER_EMAIL = "user.email";
+	
 
 	// wrappers
 	private ViewGroup mainWrapper;
@@ -60,11 +64,11 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	private ViewGroup articleViewPagerIndicator;
 	public static Map<String, ArticleListBuilder> cateBuilderMapping = new HashMap<String, ArticleListBuilder>();
 	public static Map<String, List<Article>> cateDataMapping = new HashMap<String, List<Article>>();
-	
+
 	// data
 	private Map<String, List<Article>> articleData;
 	private List<Event> eventData;
-	
+
 	// handlers
 	private Handler afterSyncArticleHandler;
 
@@ -72,7 +76,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		super.setContentView(R.layout.main);
-		
+
 		// set the instance
 		instance = this;
 
@@ -85,7 +89,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		// all initializations
 		initLoginLayout();
 		initTabHeader();
-		
+
 		afterSyncArticleHandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -106,13 +110,13 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		articleListWrapper = findViewById(R.id.articleListWrapper);
 		articleViewPagerIndicator = (ViewGroup) articleListWrapper.findViewById(R.id.viewPagerIndicator);
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
-		
+
 		List<Fragment> fragments =  new ArrayList<Fragment>();
 		for(String aCate : ForBossUtils.getCategoryList()) {
 			Article sampleArticle = new Article();
 			sampleArticle.setCategory(aCate);
 			List<Article> data = articleDao.queryForMatching(sampleArticle);
-			
+
 			ArticleListFragment aFragment = (ArticleListFragment) Fragment.instantiate(this, ArticleListFragment.class.getName());
 			aFragment.setContext(this);
 			aFragment.setData(data);
@@ -121,12 +125,12 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			// store the builder and data
 			cateBuilderMapping.put(aCate, aFragment.getArticleListBuilder());
 			cateDataMapping.put(aCate, data);
-			
+
 			// add indicator
 			ImageView anIndicator = new ImageView(this);
 			LinearLayout.LayoutParams anIndicatorLayoutParams = new LinearLayout.LayoutParams(
-																		LinearLayout.LayoutParams.WRAP_CONTENT, 
-																		LinearLayout.LayoutParams.WRAP_CONTENT);
+					LinearLayout.LayoutParams.WRAP_CONTENT, 
+					LinearLayout.LayoutParams.WRAP_CONTENT);
 			anIndicator.setImageResource(R.drawable.dot);
 			articleViewPagerIndicator.addView(anIndicator, anIndicatorLayoutParams);
 		}
@@ -146,7 +150,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 						anIndicator.setImageResource(R.drawable.dot);
 					}
 				}
-				
+
 				setCategoryText(position);
 			}
 
@@ -156,7 +160,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) { }
 		});
-		
+
 		setCategoryText(0);
 	}
 
@@ -164,7 +168,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		TextView categoryText = (TextView) mainWrapper.findViewById(R.id.categoryText);
 		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getCategoryList().get(position)) );
 	}
-	
+
 	private void initTabHeader() {
 		View tabHeaderWrapper = findViewById(R.id.tabHeaderWrapper);
 		ImageButton articleButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.contentButton);
@@ -209,29 +213,34 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			public void onClick(View v) {
 				//TODO: validate email
 
-				Handler sendEmailSuccessHandler = new Handler() {
+				Handler sendEmailFinishedHandler = new Handler() {
 					@Override
 					public void handleMessage(Message msg) {
-						loginLayoutWrapper.setVisibility(View.GONE);
+						JSONObject finalResult = (JSONObject) msg.obj;
+						boolean success = false;
+						try {
+							success = (Boolean)finalResult.get("success");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						if (success) {
+							loginLayoutWrapper.setVisibility(View.GONE);
 
-						SharedPreferences settings = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
-						SharedPreferences.Editor editor = settings.edit();
-						editor.putString(USER_EMAIL, getUserEmail());
-						editor.commit();
+							SharedPreferences settings = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+							SharedPreferences.Editor editor = settings.edit();
+							editor.putString(USER_EMAIL, getUserEmail());
+							editor.commit();
+						} else {
+							ForBossUtils.alert(getApplicationContext(), "Xác nhận email thất bại. Xin hãy thử lại lần nữa.");	
+						}
 					}
 				};
 
-				Handler sendEmailFailHandler = new Handler() {
-					@Override
-					public void handleMessage(Message msg) {
-						ForBossUtils.alert(getApplicationContext(), "Xác nhận email thất bại. Xin hãy thử lại lần nữa.");
-					}
-				};
-				SendAsyncTask thread = new SendAsyncTask();
-				thread.setUrl(SendAsyncTask.LOGIN_URL + "/" + getUserEmail());
-				thread.setTaskFinishedHandler(sendEmailSuccessHandler);
-				thread.setTaskFailedHandler(sendEmailFailHandler);
-				thread.execute("");
+//				SendAsyncTask thread = new SendAsyncTask();
+//				thread.setUrl(SendAsyncTask.LOGIN_URL + "/" + getUserEmail());
+//				thread.setTaskFinishedHandler(sendEmailFinishedHandler);
+//				thread.execute("");
+				ForBossUtils.get(URL.LOGIN_URL + "/" + getUserEmail(), sendEmailFinishedHandler);
 			}
 		});
 	}
@@ -255,7 +264,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ArticlePictureLoadAsyncTask.class);
 		this.startService(intent);
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();

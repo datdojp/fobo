@@ -9,42 +9,45 @@ public class Article implements Serializable {
 	@SerializedName("ID")
 	@DatabaseField(id=true)
 	private String id;
-	
+
 	@SerializedName("Title")
 	@DatabaseField
 	private String title;
-	
+
 	@SerializedName("Thumbnail")
 	@DatabaseField
 	private String thumbnail;
-	
+
 	@SerializedName("Body")
 	@DatabaseField
 	private String body;
-	
+
 	@SerializedName("Category")
 	@DatabaseField
 	private String category;
-	
+
 	@SerializedName("Views")
 	@DatabaseField
 	private int views;
-	
+
 	@SerializedName("Likes")
 	@DatabaseField
 	private int likes;
-	
+
 	@SerializedName("Link")
 	@DatabaseField
 	private String link;
-	
+
 	@SerializedName("CreatedTime")
 	@DatabaseField
 	private long createdTime;
-	
+
 	@DatabaseField
-	private int isLike;
-	
+	private boolean isLike;
+
+	@DatabaseField
+	private boolean isView;
+
 	@DatabaseField
 	private String pictureLocation;
 
@@ -120,13 +123,6 @@ public class Article implements Serializable {
 		this.createdTime = createdTime;
 	}
 
-	public int getIsLike() {
-		return isLike;
-	}
-
-	public void setIsLike(int isLike) {
-		this.isLike = isLike;
-	}
 
 	public String getPictureLocation() {
 		return pictureLocation;
@@ -135,4 +131,21 @@ public class Article implements Serializable {
 	public void setPictureLocation(String pictureLocation) {
 		this.pictureLocation = pictureLocation;
 	}
+
+	public boolean isLike() {
+		return isLike;
+	}
+
+	public void setLike(boolean isLike) {
+		this.isLike = isLike;
+	}
+
+	public boolean isView() {
+		return isView;
+	}
+
+	public void setView(boolean isView) {
+		this.isView = isView;
+	}
+
 }
