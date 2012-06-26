@@ -1,10 +1,15 @@
 package com.forboss.utils;
 
 import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -16,10 +21,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.forboss.ArticleDetailActivity;
 import com.forboss.R;
 import com.forboss.custom.PullToRefreshListView;
 import com.forboss.custom.PullToRefreshListView.OnRefreshListener;
 import com.forboss.data.model.Article;
+import com.forboss.data.utils.DatabaseHelper;
+import com.j256.ormlite.dao.Dao;
 
 public class ArticleListBuilder {
 	private Context context;
@@ -80,13 +88,15 @@ public class ArticleListBuilder {
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			Article article = data.get(position);
 			View view;
 			if (convertView != null) {
 				view = convertView;
 			} else {
 				view = inflater.inflate(R.layout.article_item, null);
 			}
+
+			Article article = data.get(position);
+			view.setTag(article);
 
 			// set thumbnail
 			if (article.getPictureLocation() != null) {
@@ -102,6 +112,17 @@ public class ArticleListBuilder {
 			// set title
 			TextView title = (TextView) view.findViewById(R.id.title);
 			title.setText(article.getTitle());
+
+			// set "view detail" action
+			view.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Article article = (Article) v.getTag();
+					ForBossUtils.putBundleData("article", article);
+					Intent intent = new Intent(root.getContext(), ArticleDetailActivity.class);
+					context.startActivity(intent);
+				}
+			});
 
 			return view;
 		}

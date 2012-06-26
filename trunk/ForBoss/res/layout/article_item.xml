@@ -33,19 +33,21 @@
             android:text="time" />
 
         <LinearLayout
+            android:id="@+id/viewDetail"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" 
-            android:gravity="right">
+            android:gravity="right"
+            android:orientation="horizontal" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Xem chi tiết" />
-            <ImageView 
+
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_detail"/>
+                android:src="@drawable/icon_detail" />
         </LinearLayout>
     </LinearLayout>
 

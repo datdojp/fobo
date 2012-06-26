@@ -1,11 +1,13 @@
 package com.forboss.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,6 +23,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,6 +50,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -215,11 +227,11 @@ public class ForBossUtils {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	
+
 	private static ProgressDialog progressDialog = null;
 	public static void alertProgress(Context context, String message) {
 		dismissProgress(context);
-		
+
 		progressDialog = new ProgressDialog(context) {
 			@Override
 			public void onBackPressed() {};
@@ -227,13 +239,13 @@ public class ForBossUtils {
 		progressDialog.setMessage(message);
 		progressDialog.show();
 	}
-	
+
 	public static void dismissProgress(Context context) {
 		if (progressDialog != null) {
 			progressDialog.dismiss();
 		}
 	}
-	
+
 	private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyyMMdd");
 	public static final boolean sameDay(Date aDate, Date otherDate) {
 		if (aDate == null && otherDate == null) {
@@ -284,11 +296,11 @@ public class ForBossUtils {
 	public static String getConfig(String key) {
 		return config.getString(key);
 	}
-	
+
 	public static boolean getProductionalEnvironment() {
 		return true;
 	}
-	
+
 	public static String getAPIBaseUrl() {
 		if (!getProductionalEnvironment()) return config.getString("API_STAGING_URL");
 		else return config.getString("API_PRODUCTIONAL_URL");
@@ -301,80 +313,80 @@ public class ForBossUtils {
 		}
 		String result = sessionDateFormat.format(sessionDate);
 		result = StringUtils.replace(result, "$$$", getDayOfMonthSuffix(sessionDate));
-		
+
 		return "Day " + nthDay + " - " + result;
 	}
 	private static String getDayOfMonthSuffix(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		int n = calendar.get(Calendar.DAY_OF_MONTH);
-	    if (n < 1 || n > 31) {
-	        throw new IllegalArgumentException("illegal day of month: " + n);
-	    }
-	    if (n >= 11 && n <= 13) {
-	        return "th";
-	    }
-	    switch (n % 10) {
-	        case 1:  return "st";
-	        case 2:  return "nd";
-	        case 3:  return "rd";
-	        default: return "th";
-	    }
+		if (n < 1 || n > 31) {
+			throw new IllegalArgumentException("illegal day of month: " + n);
+		}
+		if (n >= 11 && n <= 13) {
+			return "th";
+		}
+		switch (n % 10) {
+		case 1:  return "st";
+		case 2:  return "nd";
+		case 3:  return "rd";
+		default: return "th";
+		}
 	}
 
 	public static void initNavHeader(Activity activity) {
-//		TODO
-//		//add listener for controls
-//		ImageButton btnBack = (ImageButton) activity.findViewById(R.id.navBar_BackBtn);
-//		btnBack.setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				((Activity)v.getContext()).finish();
-//			}
-//		});
-//
-//		//bring nav header to front
-//		activity.findViewById(R.id.navHeaderContainer).bringToFront();
+		//		TODO
+		//		//add listener for controls
+		//		ImageButton btnBack = (ImageButton) activity.findViewById(R.id.navBar_BackBtn);
+		//		btnBack.setOnClickListener(new View.OnClickListener() {
+		//			@Override
+		//			public void onClick(View v) {
+		//				((Activity)v.getContext()).finish();
+		//			}
+		//		});
+		//
+		//		//bring nav header to front
+		//		activity.findViewById(R.id.navHeaderContainer).bringToFront();
 	}
-	
+
 	public static boolean isFileExisting(String filename, Context context) {
 		File file = context.getFileStreamPath(filename);
 		return file.exists();
 	}
-	
+
 	public static void copyAssetFile(String src, String dst) throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        AssetManager assets = ForBossApplication.getAppContext().getAssets();
-        try {
-         in = assets.open(src);
-          out = new FileOutputStream(dst);
-          copyFile(in, out);
-          in.close();
-          in = null;
-          out.flush();
-          out.close();
-          out = null;
-        } catch(Exception e) {
-            Log.e("CopyFile", "Copy file failed because of ", e);
-        }       
+		InputStream in = null;
+		OutputStream out = null;
+		AssetManager assets = ForBossApplication.getAppContext().getAssets();
+		try {
+			in = assets.open(src);
+			out = new FileOutputStream(dst);
+			copyFile(in, out);
+			in.close();
+			in = null;
+			out.flush();
+			out.close();
+			out = null;
+		} catch(Exception e) {
+			Log.e("CopyFile", "Copy file failed because of ", e);
+		}       
 
 	}
-	
+
 	private static void copyFile(InputStream in, OutputStream out) throws IOException {
-	    byte[] buffer = new byte[1024];
-	    int read;
-	    while((read = in.read(buffer)) != -1){
-	      out.write(buffer, 0, read);
-	    }
+		byte[] buffer = new byte[1024];
+		int read;
+		while((read = in.read(buffer)) != -1){
+			out.write(buffer, 0, read);
+		}
 	}
-	
+
 	public static String[] getAssetListFromConfig(String configKey) {
 		String configString = getConfig(configKey);
 		String[] splitted = StringUtils.split(configString, ",");
 		return splitted;
 	}
-	
+
 	private static List<String> categoryList;
 	public static List<String> getCategoryList() {
 		if (categoryList == null) {
@@ -385,7 +397,44 @@ public class ForBossUtils {
 				categoryList.add(splitted[i].trim());
 			}
 		}
-		
+
 		return categoryList;
+	}
+
+	public static void get(String url, Handler taskFinishedHandler) {
+		// reference: http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpGet httpget = new HttpGet(url);
+
+		try {
+			HttpResponse response = httpclient.execute(httpget);
+			InputStream input = response.getEntity().getContent();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+			String json = reader.readLine();
+			JSONTokener tokener = new JSONTokener(json);
+			try {
+				JSONObject finalResult = new JSONObject(tokener);
+				// boolean success = (Boolean)finalResult.get("success");
+
+				if (taskFinishedHandler != null)  {
+					Message message = taskFinishedHandler.obtainMessage();
+					message.obj = finalResult;
+					taskFinishedHandler.sendMessage(message);
+				}
+
+			} catch (JSONException e) {
+				Log.e("ForBossUtils", e.toString());
+			}
+			finally {
+				if (input != null) input.close();
+			}
+
+		} catch (ClientProtocolException e) {
+			Log.e("ForBossUtils", e.toString());
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.e("ForBossUtils", e.toString());
+			e.printStackTrace();
+		} 
 	}
 }
