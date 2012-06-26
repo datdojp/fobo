@@ -41,6 +41,14 @@ public class Article implements Serializable {
 	@SerializedName("CreatedTime")
 	@DatabaseField
 	private long createdTime;
+	
+	@SerializedName("EventTime")
+	@DatabaseField
+	private String eventTime;
+	
+	@SerializedName("EventPlace")
+	@DatabaseField
+	private String eventPlace;
 
 	@DatabaseField
 	private boolean isLike;
@@ -148,4 +156,19 @@ public class Article implements Serializable {
 		this.isView = isView;
 	}
 
+	public String getEventTime() {
+		return eventTime;
+	}
+
+	public void setEventTime(String eventTime) {
+		this.eventTime = eventTime;
+	}
+
+	public String getEventPlace() {
+		return eventPlace;
+	}
+
+	public void setEventPlace(String eventPlace) {
+		this.eventPlace = eventPlace;
+	}
 }

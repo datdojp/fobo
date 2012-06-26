@@ -11,14 +11,14 @@
 
     <include layout="@layout/tab_header" />
 
-    <include layout="@layout/title_header" />
-
     <RelativeLayout
         android:id="@+id/articleListWrapper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#0000FF"
+        android:background="#000000"
         android:orientation="vertical" >
+        
+        <include layout="@layout/title_header" />
 
         <android.support.v4.view.ViewPager
             android:id="@+android:id/viewpager"
@@ -40,13 +40,11 @@
         android:id="@+id/eventListWrapper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#FF0000" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="EVENT LIST" />
-
+        android:background="#000000" 
+        android:orientation="vertical">
+        
+        <include layout="@layout/title_header" />
+<!-- 
         <com.forboss.custom.PullToRefreshListView
             android:id="@+id/eventList"
             android:layout_width="fill_parent"
@@ -54,6 +52,7 @@
             android:background="#00000000"
             android:cacheColorHint="#00000000"
             android:divider="#00000000" />
+             -->
     </LinearLayout>
 
     <LinearLayout

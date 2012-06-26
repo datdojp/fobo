@@ -387,18 +387,34 @@ public class ForBossUtils {
 		return splitted;
 	}
 
+	private static List<String> articleCategoryList;
+	public static List<String> getArticleCategoryList() {
+		if (articleCategoryList == null) {
+			articleCategoryList = new ArrayList<String>();
+			String categoryConfig = getConfig("categories");
+			String[] splitted = categoryConfig.trim().split(",");
+			for(int i = 0; i < splitted.length; i++) {
+				articleCategoryList.add(splitted[i].trim());
+			}
+		}
+
+		return articleCategoryList;
+	}
 	private static List<String> categoryList;
 	public static List<String> getCategoryList() {
 		if (categoryList == null) {
 			categoryList = new ArrayList<String>();
-			String categoryConfig = getConfig("categories");
-			String[] splitted = categoryConfig.trim().split(",");
-			for(int i = 0; i < splitted.length; i++) {
-				categoryList.add(splitted[i].trim());
-			}
+			categoryList.addAll(getArticleCategoryList());
+			categoryList.add(getEventCategory());
 		}
-
 		return categoryList;
+	}
+	private static String eventCategory;
+	public static String getEventCategory() {
+		if (eventCategory == null) {
+			eventCategory = getConfig("event");
+		}
+		return eventCategory;
 	}
 
 	public static void get(String url, Handler taskFinishedHandler) {

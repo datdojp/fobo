@@ -72,13 +72,11 @@ public class ArticleService extends IntentService {
 
 		// parse json string into entity objects
 		GsonBuilder gsonBuilder = new GsonBuilder();
-//		gsonBuilder.registerTypeAdapter(Date.class, new DateTimeDeserializer());
 		Gson gsonParser = gsonBuilder.create();
 		Type collectionType = new TypeToken<Collection<Article>>(){}.getType();
 		Collection<Article> articles = gsonParser.fromJson(new JsonReader(new InputStreamReader(jsonStream)), collectionType);
 
-		// check if the news item exists in the database
-		// insert into database if not
+		// check if the news item exists in the database --> insert into database if not
 		for (Article anArticle : articles) {
 			if(articleDao.queryForId(anArticle.getId()) == null) {
 				Log.d(this.getClass().getName(), "Inserting article with title " + anArticle.getTitle());
@@ -86,14 +84,6 @@ public class ArticleService extends IntentService {
 			}
 		}
 	}
-	
-//	protected class DateTimeDeserializer implements JsonDeserializer<Date> {
-//		@Override
-//		public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-//				throws JsonParseException {
-//			return new Date(json.getAsJsonPrimitive().getAsLong() * 1000);
-//		}
-//	}
 	
 	public void execute(HttpUriRequest request, ExecutorFunction func) throws ServiceException {
         try {

@@ -1,11 +1,7 @@
 package com.forboss.utils;
 
 import java.io.FileNotFoundException;
-import java.sql.SQLException;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -26,8 +22,6 @@ import com.forboss.R;
 import com.forboss.custom.PullToRefreshListView;
 import com.forboss.custom.PullToRefreshListView.OnRefreshListener;
 import com.forboss.data.model.Article;
-import com.forboss.data.utils.DatabaseHelper;
-import com.j256.ormlite.dao.Dao;
 
 public class ArticleListBuilder {
 	private Context context;
@@ -89,41 +83,82 @@ public class ArticleListBuilder {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
+			Article article = data.get(position);
+			
 			if (convertView != null) {
 				view = convertView;
 			} else {
-				view = inflater.inflate(R.layout.article_item, null);
+				if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+					view = inflater.inflate(R.layout.event_item, null);
+				} else {
+					view = inflater.inflate(R.layout.article_item, null);
+				}
+					
 			}
 
-			Article article = data.get(position);
 			view.setTag(article);
 
-			// set thumbnail
-			if (article.getPictureLocation() != null) {
-				ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
-				try {
-					thumbnailImage.setImageBitmap(ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context)));
-				} catch (FileNotFoundException e) {
-					Log.e(this.getClass().getName(), e.getMessage());
-					e.printStackTrace();
+			if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+				// set thumbnail
+				if (article.getPictureLocation() != null) {
+					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+					try {
+						thumbnailImage.setImageBitmap(ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context)));
+					} catch (FileNotFoundException e) {
+						Log.e(this.getClass().getName(), e.getMessage());
+						e.printStackTrace();
+					}
 				}
+				
+				// set title
+				TextView titleText = (TextView) view.findViewById(R.id.titleText);
+				titleText.setText(article.getTitle());
+				
+				// set time
+				TextView timeText = (TextView) view.findViewById(R.id.timeText);
+				timeText.setText(article.getEventTime());
+				
+				// set place
+				TextView placeText = (TextView) view.findViewById(R.id.placeText);
+				placeText.setText(article.getEventPlace());
+				
+				// set detail button
+				view.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Article article = (Article) v.getTag();
+						ForBossUtils.putBundleData("article", article);
+						Intent intent = new Intent(context, ArticleDetailActivity.class);
+						context.startActivity(intent);
+					}
+				});
+			} else {
+				// set thumbnail
+				if (article.getPictureLocation() != null) {
+					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+					try {
+						thumbnailImage.setImageBitmap(ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context)));
+					} catch (FileNotFoundException e) {
+						Log.e(this.getClass().getName(), e.getMessage());
+						e.printStackTrace();
+					}
+				}
+
+				// set title
+				TextView title = (TextView) view.findViewById(R.id.title);
+				title.setText(article.getTitle());
+
+				// set "view detail" action
+				view.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Article article = (Article) v.getTag();
+						ForBossUtils.putBundleData("article", article);
+						Intent intent = new Intent(context, ArticleDetailActivity.class);
+						context.startActivity(intent);
+					}
+				});
 			}
-
-			// set title
-			TextView title = (TextView) view.findViewById(R.id.title);
-			title.setText(article.getTitle());
-
-			// set "view detail" action
-			view.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Article article = (Article) v.getTag();
-					ForBossUtils.putBundleData("article", article);
-					Intent intent = new Intent(root.getContext(), ArticleDetailActivity.class);
-					context.startActivity(intent);
-				}
-			});
-
 			return view;
 		}
 	}
