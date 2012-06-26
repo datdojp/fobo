@@ -32,7 +32,6 @@ import com.forboss.adapter.PagerAdapter;
 import com.forboss.api.ArticlePictureLoadAsyncTask;
 import com.forboss.api.ArticleService;
 import com.forboss.data.model.Article;
-import com.forboss.data.model.Event;
 import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.fragment.ArticleListFragment;
 import com.forboss.utils.ArticleListBuilder;
@@ -50,12 +49,12 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	// constant
 	private static final String APP_PREF = "forboss";	
 	private static final String USER_EMAIL = "user.email";
-	
+
 
 	// wrappers
 	private ViewGroup mainWrapper;
 	private View articleListWrapper;
-	private View eventListWrapper;
+	private ViewGroup eventListWrapper;
 	private View productListWrapper;
 	private View introLayoutWrapper;
 	private View loginLayoutWrapper;
@@ -67,7 +66,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 	// data
 	private Map<String, List<Article>> articleData;
-	private List<Event> eventData;
+	private List<Article> eventData;
 
 	// handlers
 	private Handler afterSyncArticleHandler;
@@ -82,7 +81,6 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 		// get wrapper from layout
 		mainWrapper = (ViewGroup) findViewById(R.id.mainWrapper);
-		eventListWrapper = findViewById(R.id.eventListWrapper);
 		productListWrapper = findViewById(R.id.productListWrapper);
 		introLayoutWrapper = findViewById(R.id.introLayoutWrapper);
 
@@ -96,6 +94,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				introLayoutWrapper.setVisibility(View.GONE);
 				try {
 					initArticleList();
+					initEventList();
 					syncArticlePicture();
 				} catch (SQLException e) {
 					Log.e(this.getClass().getName(), e.getMessage());
@@ -112,7 +111,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
 
 		List<Fragment> fragments =  new ArrayList<Fragment>();
-		for(String aCate : ForBossUtils.getCategoryList()) {
+		for(String aCate : ForBossUtils.getArticleCategoryList()) {
 			Article sampleArticle = new Article();
 			sampleArticle.setCategory(aCate);
 			List<Article> data = articleDao.queryForMatching(sampleArticle);
@@ -151,7 +150,8 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 					}
 				}
 
-				setCategoryText(position);
+				TextView categoryText = (TextView) articleListWrapper.findViewById(R.id.categoryText);
+				categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getArticleCategoryList().get(position)) );
 			}
 
 			@Override
@@ -161,12 +161,8 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			public void onPageScrolled(int arg0, float arg1, int arg2) { }
 		});
 
-		setCategoryText(0);
-	}
-
-	private void setCategoryText(int position) {
-		TextView categoryText = (TextView) mainWrapper.findViewById(R.id.categoryText);
-		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getCategoryList().get(position)) );
+		TextView categoryText = (TextView) articleListWrapper.findViewById(R.id.categoryText);
+		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getArticleCategoryList().get(0)) );
 	}
 
 	private void initTabHeader() {
@@ -236,13 +232,32 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 					}
 				};
 
-//				SendAsyncTask thread = new SendAsyncTask();
-//				thread.setUrl(SendAsyncTask.LOGIN_URL + "/" + getUserEmail());
-//				thread.setTaskFinishedHandler(sendEmailFinishedHandler);
-//				thread.execute("");
 				ForBossUtils.get(URL.LOGIN_URL + "/" + getUserEmail(), sendEmailFinishedHandler);
 			}
 		});
+	}
+
+	private void initEventList() throws SQLException {
+		eventListWrapper = (ViewGroup) findViewById(R.id.eventListWrapper);
+
+		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
+		Article sampleArticle = new Article();
+		sampleArticle.setCategory(ForBossUtils.getEventCategory());
+		eventData = articleDao.queryForMatching(sampleArticle);
+
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+																	LinearLayout.LayoutParams.FILL_PARENT, 
+																	LinearLayout.LayoutParams.FILL_PARENT);
+		ArticleListBuilder builder = new ArticleListBuilder();
+		eventListWrapper.addView(builder.build(this, this.getLayoutInflater(), eventListWrapper, eventData));
+		
+		// store data and builder
+		cateBuilderMapping.put(ForBossUtils.getEventCategory(), builder);
+		cateDataMapping.put(ForBossUtils.getEventCategory(), eventData);
+		
+		// set the category title
+		TextView categoryText = (TextView) eventListWrapper.findViewById(R.id.categoryText);
+		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getEventCategory()) );
 	}
 
 	private String getUserEmail() {

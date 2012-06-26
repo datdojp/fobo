@@ -29,6 +29,10 @@
             android:name=".ArticleDetailActivity"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".EventDetailActivity"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <service android:name=".api.ArticleService" >
         </service>

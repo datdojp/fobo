@@ -2,12 +2,13 @@ package com.forboss.data.utils;
 
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
 import com.forboss.R;
 import com.forboss.data.model.Article;
-import com.forboss.data.model.Event;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -26,7 +27,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	// the DAO object we use to access db
 	private Dao<Article, String> articleDao = null;
-	private Dao<Event, String> eventDao;
+//	private Dao<Event, String> eventDao;
 
 
 	public DatabaseHelper(Context context) {
@@ -54,7 +55,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
 			TableUtils.createTable(connectionSource, Article.class);
-			TableUtils.createTable(connectionSource, Event.class);
+//			TableUtils.createTable(connectionSource, Event.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -70,7 +71,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
 			TableUtils.dropTable(connectionSource, Article.class, true);
-			TableUtils.dropTable(connectionSource, Event.class, true);
+//			TableUtils.dropTable(connectionSource, Event.class, true);
 
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -95,12 +96,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Returns the Database Access Object (DAO) for Speaker class. It will create it or just give the cached
 	 * value.
 	 */
-	public Dao<Event, String> getEventDao() throws SQLException {
-		if (eventDao == null) {
-			eventDao = getDao(Event.class);
-		}
-		return eventDao;
-	}
+//	public Dao<Event, String> getEventDao() throws SQLException {
+//		if (eventDao == null) {
+//			eventDao = getDao(Event.class);
+//		}
+//		return eventDao;
+//	}
 
 	/**
 	 * Close the database connections and clear any cached DAOs.
@@ -109,7 +110,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void close() {
 		if (usageCounter.decrementAndGet() == 0) {
 			super.close();
-			eventDao = null;
+//			eventDao = null;
 			articleDao = null;
 		}
 	}

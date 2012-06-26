@@ -2,8 +2,6 @@ package com.forboss.api;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,7 +51,10 @@ public class ArticlePictureLoadAsyncTask extends IntentService {
 					}
 				}
 			}
-			ForBossViewPagerFragmentActivity.cateBuilderMapping.get(aCate).refresh();
+			ArticleListBuilder builder = ForBossViewPagerFragmentActivity.cateBuilderMapping.get(aCate);
+			if (builder != null) {
+				builder.refresh();
+			}
 		}
 	}
 
