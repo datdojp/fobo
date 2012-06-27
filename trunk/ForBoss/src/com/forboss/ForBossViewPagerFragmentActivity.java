@@ -207,8 +207,20 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		submitButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO: validate email
+				EditText userEmailEdit = (EditText) loginLayoutWrapper.findViewById(R.id.userEmailEdit);
+				String email = userEmailEdit.getText().toString();
 
+				// validate email
+				if (email == null || "".equals(email.trim())) {
+					ForBossUtils.alert(instance, "Hãy nhập email của bạn");
+					return;
+				}
+				if (!ForBossUtils.isValidEmailAddress(email.trim())) {
+					ForBossUtils.alert(instance, "Email không đúng chuẩn.");
+					return;
+				}
+				
+				// handler to handle when the server response
 				Handler sendEmailFinishedHandler = new Handler() {
 					@Override
 					public void handleMessage(Message msg) {
@@ -232,6 +244,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 					}
 				};
 
+				// send email to server
 				ForBossUtils.get(URL.LOGIN_URL + "/" + getUserEmail(), sendEmailFinishedHandler);
 			}
 		});
@@ -261,7 +274,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	}
 
 	private String getUserEmail() {
-		return ( (EditText)loginLayoutWrapper.findViewById(R.id.userEmailEdit) ).getText().toString();
+		return ( (EditText)loginLayoutWrapper.findViewById(R.id.userEmailEdit) ).getText().toString().trim();
 	}
 
 	private boolean isLoggin() {

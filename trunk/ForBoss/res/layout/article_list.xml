@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.forboss.custom.PullToRefreshListView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/article_ptr"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
-
-    <com.forboss.custom.PullToRefreshListView
-        android:id="@+id/newsList"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#00000000"
-        android:cacheColorHint="#00000000"
-        android:divider="#00000000" />
-
-</RelativeLayout>
+    android:layout_height="fill_parent"
+    android:background="#00000000"
+    android:cacheColorHint="#00000000"
+    android:divider="#00000000" 
+    android:dividerHeight="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"/>

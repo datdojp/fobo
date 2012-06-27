@@ -2,38 +2,58 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tabHeaderWrapper"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
+    android:layout_height="40dp"
+    android:layout_marginBottom="-5dp"
+    android:background="@drawable/bg_header"
+    android:gravity="top"
     android:orientation="horizontal" >
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/linkedin" />
+        android:src="@drawable/but_show" />
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:gravity="right" >
 
         <ImageButton
             android:id="@+id/contentButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:background="#00000000"
             android:src="@drawable/but_content" />
+
+        <FrameLayout
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:background="#000000" >
+        </FrameLayout>
 
         <ImageButton
             android:id="@+id/eventButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:background="#00000000"
             android:src="@drawable/but_event" />
+
+        <FrameLayout
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:background="#000000" >
+        </FrameLayout>
 
         <ImageButton
             android:id="@+id/moreButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:background="#00000000"
             android:src="@drawable/but_more" />
     </LinearLayout>

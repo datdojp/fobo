@@ -11,40 +11,54 @@
 
     <include layout="@layout/tab_header" />
 
-    <RelativeLayout
+    <ImageView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/header_line" >
+    </ImageView>
+
+    <LinearLayout
         android:id="@+id/articleListWrapper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#000000"
         android:orientation="vertical" >
-        
+
         <include layout="@layout/title_header" />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+android:id/viewpager"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent" >
 
-        <LinearLayout
-            android:id="@+id/viewPagerIndicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="horizontal" >
-        </LinearLayout>
-    </RelativeLayout>
+            <android.support.v4.view.ViewPager
+                android:id="@+android:id/viewpager"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+
+            <LinearLayout
+                android:id="@+id/viewPagerIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal" >
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/eventListWrapper"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#000000" 
-        android:orientation="vertical">
-        
+        android:background="#000000"
+        android:orientation="vertical" >
+
         <include layout="@layout/title_header" />
-<!-- 
+        <!--
         <com.forboss.custom.PullToRefreshListView
             android:id="@+id/eventList"
             android:layout_width="fill_parent"
@@ -52,10 +66,9 @@
             android:background="#00000000"
             android:cacheColorHint="#00000000"
             android:divider="#00000000" />
-             -->
+        -->
     </LinearLayout>
 
     <include layout="@layout/product_list" />
-    
-    
+
 </LinearLayout>
