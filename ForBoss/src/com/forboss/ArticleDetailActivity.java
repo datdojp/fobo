@@ -17,8 +17,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.android.DialogError;
+import com.facebook.android.FacebookError;
 import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
+import com.forboss.sns.facebook.BaseDialogListener;
+import com.forboss.sns.facebook.Utility;
 import com.forboss.utils.ForBossUtils;
 import com.forboss.utils.URL;
 import com.j256.ormlite.dao.Dao;
@@ -36,21 +40,18 @@ public class ArticleDetailActivity extends Activity {
 		article = (Article) ForBossUtils.getBundleData("article");
 		try {
 			articleDao = DatabaseHelper.getHelper(instance).getArticleDao();
+			if (!article.isView()) {
+				article.setViews(article.getViews() + 1);
+				article.setView(true);
+				articleDao.update(article);
+			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
 
-		// load article body if it is not viewed
-		if (!article.isView()) {
-			article.setViews(article.getViews() + 1);
-			article.setView(true);
-			try {
-				articleDao.update(article);
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			
-			Log.d(this.getClass().getName(), "Get detailed content for article:" + article.getId());
+		// load article body if HTML content is not loaded yet
+		if (article.getHtmlContent() == null) {
+			Log.d(this.getClass().getName(), "Get HTML content for article:" + article.getId());
 			ForBossUtils.get(URL.GET_ARTICLE_URL + "/" + article.getId(), new Handler() {
 				@Override
 				public void handleMessage(Message msg) {
@@ -58,8 +59,7 @@ public class ArticleDetailActivity extends Activity {
 					String body = "";
 					try {
 						body = (String) result.get("Body");
-						article.setBody(body);
-						article.setView(true);
+						article.setHtmlContent(body);
 						articleDao.update(article);
 						setArticleContent();
 					} catch (SQLException e) {
@@ -75,7 +75,7 @@ public class ArticleDetailActivity extends Activity {
 
 		TextView titleText = (TextView) findViewById(R.id.titleText);
 		titleText.setText(article.getTitle());
-		
+
 		setViewText();
 		setLikeText();
 
@@ -116,12 +116,45 @@ public class ArticleDetailActivity extends Activity {
 						e.printStackTrace();
 					}
 					setLikeText();
-					
+
 					// send like to server
 					ForBossUtils.get(URL.LIKE_ARTICLE_URL + "/" + article.getId(), null);
 				}
 			}
 		});
+		ImageButton facebookButton =  (ImageButton) bottomMenuWrapper.findViewById(R.id.facebookButton);
+		facebookButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Bundle params = new Bundle();
+				params.putString("name", article.getTitle());
+				params.putString("caption", article.getBody());
+				params.putString("description", article.getLink());
+				params.putString("picture", article.getThumbnail());
+				params.putString("link", article.getLink());
+
+				Utility.mFacebook.dialog(instance, "feed", params, new BaseDialogListener() {
+					
+					@Override
+					public void onComplete(Bundle values) {
+						ForBossUtils.alert(instance, "Đăng Facebook thành công.");
+					}
+
+					@Override
+					public void onFacebookError(FacebookError e) {
+						super.onFacebookError(e);
+						ForBossUtils.alert(instance, "Đăng Facebook thất bại. Hãy thử lại sau.");
+					}
+
+					@Override
+					public void onError(DialogError e) {
+						super.onError(e);
+						ForBossUtils.alert(instance, "Đăng Facebook thất bại. Hãy thử lại sau.");
+					}
+				});
+			}
+		});
+
 	}
 
 	private void setViewText() {
@@ -147,7 +180,7 @@ public class ArticleDetailActivity extends Activity {
 						"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" +
 						"</head>" +
 						"<body style='background-color:black; color: white;'>" + 
-						article.getBody() + 
+						article.getHtmlContent() + 
 						"</body>" +
 						"</html>", 
 
