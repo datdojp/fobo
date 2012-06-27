@@ -21,6 +21,9 @@ public class Article implements Serializable {
 	@SerializedName("Body")
 	@DatabaseField
 	private String body;
+	
+	@DatabaseField
+	private String htmlContent;
 
 	@SerializedName("Category")
 	@DatabaseField
@@ -171,4 +174,14 @@ public class Article implements Serializable {
 	public void setEventPlace(String eventPlace) {
 		this.eventPlace = eventPlace;
 	}
+
+	public String getHtmlContent() {
+		return htmlContent;
+	}
+
+	public void setHtmlContent(String htmlContent) {
+		this.htmlContent = htmlContent;
+	}
+	
+	
 }
