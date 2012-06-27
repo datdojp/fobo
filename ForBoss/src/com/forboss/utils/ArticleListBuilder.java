@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -15,9 +16,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.forboss.ArticleDetailActivity;
+import com.forboss.ForBossApplication;
 import com.forboss.R;
 import com.forboss.custom.PullToRefreshListView;
 import com.forboss.custom.PullToRefreshListView.OnRefreshListener;
@@ -40,7 +43,7 @@ public class ArticleListBuilder {
 		this.ptrNewsListData = data;
 
 		this.root = inflater.inflate(R.layout.article_list, container, false);
-		ptrNewsList = (PullToRefreshListView) root.findViewById(R.id.newsList);
+		ptrNewsList = (PullToRefreshListView) root.findViewById(R.id.article_ptr);
 		ptrNewsList.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -103,7 +106,8 @@ public class ArticleListBuilder {
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
 					try {
-						thumbnailImage.setImageBitmap(ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context)));
+						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
+						thumbnailImage.setImageBitmap(bm);
 					} catch (FileNotFoundException e) {
 						Log.e(this.getClass().getName(), e.getMessage());
 						e.printStackTrace();
@@ -137,7 +141,14 @@ public class ArticleListBuilder {
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
 					try {
-						thumbnailImage.setImageBitmap(ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context)));
+						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
+						int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
+						int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
+						int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
+						thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
+															thumbnailImageWidth + 2 * twoDpInPx, 
+															thumbnailImageHeight + 2 * twoDpInPx));
+						thumbnailImage.setImageBitmap(bm);
 					} catch (FileNotFoundException e) {
 						Log.e(this.getClass().getName(), e.getMessage());
 						e.printStackTrace();

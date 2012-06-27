@@ -10,20 +10,28 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hãy điền email để kích hoạt ứng dụng" />
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="50dp"
+        android:text="Hãy điền email để kích hoạt ứng dụng"
+        android:textAppearance="@style/general_text_style" />
 
     <EditText
         android:id="@+id/userEmailEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/input"
         android:hint="hãy nhập email của bạn"
-        android:singleLine="true" />
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:singleLine="true"
+        android:textAppearance="@style/general_input_style" />
 
     <ImageButton
         android:id="@+id/submitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:background="#00000000"
         android:src="@drawable/but_login" />
 

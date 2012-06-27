@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="general_text_style" parent="@android:style/Widget.TextView">
+	    <item name="android:textSize">14dp</item>
+	    <item name="android:textColor">#EDDB80</item>
+	</style>
+	
+    <style name="cateogory_text_style" parent="@android:style/Widget.TextView">
+	    <item name="android:textSize">20dp</item>
+	    <item name="android:textColor">#FBD687</item>
+	    <item name="android:textStyle">bold</item>
+	</style>
+	
+    <style name="general_input_style" parent="@android:style/Widget.EditText">
+	    <item name="android:textSize">11dp</item>
+	    <item name="android:textColor">#222222</item>
+	</style>
+</resources>

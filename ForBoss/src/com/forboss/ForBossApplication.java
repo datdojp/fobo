@@ -2,6 +2,8 @@ package com.forboss;
 
 import android.app.Application;
 import android.content.Context;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.Facebook;
@@ -35,23 +37,31 @@ public class ForBossApplication extends Application {
 		// restore session if one exists
 		SessionStore.restore(Utility.mFacebook, this);
 		SessionEvents.addAuthListener(new FbAPIsAuthListener());
+
+		WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+		display = wm.getDefaultDisplay();
 	}
-	
+
 	/*
-     * The Callback for notifying the application when authorization succeeds or
-     * fails.
-     */
+	 * The Callback for notifying the application when authorization succeeds or
+	 * fails.
+	 */
 
-    public class FbAPIsAuthListener implements AuthListener {
+	public class FbAPIsAuthListener implements AuthListener {
 
-        @Override
-        public void onAuthSucceed() {
-        	SessionStore.save(Utility.mFacebook, instance);
-        }
+		@Override
+		public void onAuthSucceed() {
+			SessionStore.save(Utility.mFacebook, instance);
+		}
 
-        @Override
-        public void onAuthFail(String error) {
-            ForBossUtils.alert(instance, "Đăng nhập facebook thất bại.");
-        }
-    }
+		@Override
+		public void onAuthFail(String error) {
+			ForBossUtils.alert(instance, "Đăng nhập facebook thất bại.");
+		}
+	}
+
+	private static Display display;
+	public static Display getWindowDisplay() {
+		return display;
+	}
 }
