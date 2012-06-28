@@ -1,6 +1,7 @@
 package com.forboss.data.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
@@ -44,6 +45,13 @@ public class Article implements Serializable {
 	@SerializedName("CreatedTime")
 	@DatabaseField
 	private long createdTime;
+	
+	public Date getCreatedTimeInDate() {
+		if (createdTime != 0) {
+			return new Date(createdTime);
+		}
+		return null;
+	}
 	
 	@SerializedName("EventTime")
 	@DatabaseField

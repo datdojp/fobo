@@ -31,39 +31,39 @@ public class ArticleListBuilder {
 	private LayoutInflater inflater;
 
 	private View root;
-	private PullToRefreshListView ptrNewsList;
-	private List<Article> ptrNewsListData;
-	private ArticleAdapter ptrNewsListAdapter;
+	private PullToRefreshListView ptrArticleList;
+	private List<Article> ptrArticleListData;
+	private ArticleAdapter ptrArticleListAdapter;
 
 	private Handler refreshHandler;
 
 	public View build(Context context, LayoutInflater inflater, ViewGroup container, List<Article> data) {
 		this.context = context;
 		this.inflater = inflater;
-		this.ptrNewsListData = data;
+		this.ptrArticleListData = data;
 
 		this.root = inflater.inflate(R.layout.article_list, container, false);
-		ptrNewsList = (PullToRefreshListView) root.findViewById(R.id.article_ptr);
-		ptrNewsList.setOnRefreshListener(new OnRefreshListener() {
+		ptrArticleList = (PullToRefreshListView) root.findViewById(R.id.article_ptr);
+		ptrArticleList.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
 
 			}
 		});
-		ptrNewsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		ptrArticleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View view, int arg2,
 					long arg3) {
 				view.performClick();
 			}
 		});
-		ptrNewsListAdapter = new ArticleAdapter(context, ptrNewsListData);
-		ptrNewsList.setAdapter(ptrNewsListAdapter);
+		ptrArticleListAdapter = new ArticleAdapter(context, ptrArticleListData);
+		ptrArticleList.setAdapter(ptrArticleListAdapter);
 
 		refreshHandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				ptrNewsListAdapter.notifyDataSetChanged();
+				ptrArticleListAdapter.notifyDataSetChanged();
 			}
 		};
 
@@ -77,6 +77,30 @@ public class ArticleListBuilder {
 		}
 	}
 
+	public void destroy() {
+		if (ptrArticleList != null) {
+			for(int i = 0; i < ptrArticleList.getChildCount(); i++) {
+				View view = ptrArticleList.getChildAt(i);
+				if (view != null) {
+					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+					if (thumbnailImage != null) {
+						recycleBitmapOfImage(thumbnailImage, "destroy");
+					}
+				}
+			}
+		}
+	}
+
+	private void recycleBitmapOfImage(ImageView img, String tag) {
+		Bitmap oldBm = (Bitmap) img.getTag();
+		if (oldBm != null) {
+			img.setImageBitmap(null);
+			img.setTag(null);
+			oldBm.recycle();
+			Log.d(this.getClass().getName(), "...........Recycle bitmap for " + tag + "..........");
+		}
+	}
+
 	public class ArticleAdapter extends ArrayAdapter<Article> {
 		private List<Article> data;
 		public ArticleAdapter(Context context, List<Article> data) {
@@ -87,7 +111,7 @@ public class ArticleListBuilder {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
 			Article article = data.get(position);
-			
+
 			if (convertView != null) {
 				view = convertView;
 			} else {
@@ -96,36 +120,39 @@ public class ArticleListBuilder {
 				} else {
 					view = inflater.inflate(R.layout.article_item, null);
 				}
-					
+
 			}
 
 			view.setTag(article);
 
+			// EVENT
 			if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
 				// set thumbnail
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+					recycleBitmapOfImage(thumbnailImage, "event");
 					try {
 						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
 						thumbnailImage.setImageBitmap(bm);
+						thumbnailImage.setTag(bm);
 					} catch (FileNotFoundException e) {
 						Log.e(this.getClass().getName(), e.getMessage());
 						e.printStackTrace();
 					}
 				}
-				
+
 				// set title
 				TextView titleText = (TextView) view.findViewById(R.id.titleText);
 				titleText.setText(article.getTitle());
-				
+
 				// set time
 				TextView timeText = (TextView) view.findViewById(R.id.timeText);
 				timeText.setText(article.getEventTime());
-				
+
 				// set place
 				TextView placeText = (TextView) view.findViewById(R.id.placeText);
 				placeText.setText(article.getEventPlace());
-				
+
 				// set detail button
 				view.setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -136,19 +163,22 @@ public class ArticleListBuilder {
 						context.startActivity(intent);
 					}
 				});
+			// POST
 			} else {
 				// set thumbnail
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+					recycleBitmapOfImage(thumbnailImage, "post");
 					try {
 						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
 						int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
 						int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
 						int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
 						thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
-															thumbnailImageWidth + 2 * twoDpInPx, 
-															thumbnailImageHeight + 2 * twoDpInPx));
+								thumbnailImageWidth + 2 * twoDpInPx, 
+								thumbnailImageHeight + 2 * twoDpInPx));
 						thumbnailImage.setImageBitmap(bm);
+						thumbnailImage.setTag(bm);
 					} catch (FileNotFoundException e) {
 						Log.e(this.getClass().getName(), e.getMessage());
 						e.printStackTrace();
@@ -158,6 +188,10 @@ public class ArticleListBuilder {
 				// set title
 				TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(article.getTitle());
+				
+				// set time
+				TextView time = (TextView) view.findViewById(R.id.time);
+				time.setText(ForBossUtils.getLastUpdateInfo(article.getCreatedTimeInDate()));
 
 				// set "view detail" action
 				view.setOnClickListener(new View.OnClickListener() {
@@ -170,16 +204,17 @@ public class ArticleListBuilder {
 					}
 				});
 			}
+
 			return view;
 		}
 	}
 
-	public List<Article> getPtrNewsListData() {
-		return ptrNewsListData;
+	public List<Article> getPtrArticleListData() {
+		return ptrArticleListData;
 	}
 
-	public void setPtrNewsListData(List<Article> ptrNewsListData) {
-		this.ptrNewsListData = ptrNewsListData;
+	public void setPtrArticleListData(List<Article> ptrArticleListData) {
+		this.ptrArticleListData = ptrArticleListData;
 	}
 
 

@@ -6,6 +6,8 @@
 
     <include layout="@layout/top_menu" />
 
+    <include layout="@layout/header_line"/>
+    
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
