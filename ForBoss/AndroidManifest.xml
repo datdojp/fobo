@@ -14,11 +14,11 @@
         android:name="ForBossApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:screenOrientation="portrait"
         android:theme="@android:style/Theme.Black.NoTitleBar" >
         <activity
             android:name=".ForBossViewPagerFragmentActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

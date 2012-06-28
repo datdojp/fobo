@@ -24,6 +24,12 @@ public class ArticleListFragment extends Fragment {
 		return result;
 	}
 
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		articleListBuilder.destroy();
+	}
+
 	public ArticleListBuilder getArticleListBuilder() {
 		return articleListBuilder;
 	}

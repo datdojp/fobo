@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.forboss.R;
+import com.forboss.utils.ForBossUtils;
 
 /**
  * A generic, customizable Android ListView implementation that has 'Pull to Refresh' functionality.
@@ -350,7 +351,7 @@ public class PullToRefreshListView extends ListView{
 					setHeaderPadding(newHeaderPadding);
 
 					//set last update information
-					txtLastUpdate.setText("Last update: " + getLastUpdateInfo());
+					txtLastUpdate.setText("Last update: " + ForBossUtils.getLastUpdateInfo(lastUpdate));
 					
 					if(state == State.PULL_TO_REFRESH && headerPadding > 0){
 						setState(State.RELEASE_TO_REFRESH);
@@ -371,61 +372,7 @@ public class PullToRefreshListView extends ListView{
 		return super.onTouchEvent(event);
 	}
 
-	private String getLastUpdateInfo() {
-		if (lastUpdate == null) {
-			return "Never";
-		}
-		
-		Date now = new Date();
-		long timeDiff = now.getTime() - lastUpdate.getTime();
-		long deltaSecond = timeDiff / 1000;
-		if (deltaSecond < 5) {
-			return "Just now";
-		}
-		if (deltaSecond < 60) {
-			return deltaSecond + " seconds ago";
-		}
-		if (deltaSecond < 120) {
-			return "A minute ago";
-		}
-		long deltaMinute = timeDiff / (60 * 1000);
-		if (deltaMinute < 60) {
-			return deltaMinute + " minutes ago";
-		}
-		if (deltaMinute < 120) {
-			return "An hour ago";
-		}
-		long deltaHour = timeDiff / (60 * 60 * 1000);
-		if (deltaHour < 24) {
-			return deltaHour + " hours ago";
-		}
-		long deltaDay = timeDiff / (24 * 60 * 60 * 1000);
-		if (deltaDay < 2) {
-			return "Yesterday";
-		}
-		if (deltaDay < 7) {
-			return deltaDay + " days ago";
-		}
-		long deltaWeek = timeDiff / (7 * 24 * 60 * 60 * 1000);
-		if (deltaWeek < 2) {
-			return "Last week";
-		}
-		if (deltaDay < 31) {
-			return deltaWeek + " weeks ago";
-		}
-		if (deltaDay < 61) {
-			return "Last month";
-		}
-		long deltaMonth = timeDiff / (30 * 24 * 60 * 60 * 1000);
-		if (deltaDay < 365.25) {
-			return deltaMonth + " months ago";
-		}
-		if (deltaDay < 731) {
-			return "Last year";
-		}
-		long deltaYear = timeDiff / Math.round(365.25 * 24 * 60 * 60 * 1000);
-		return deltaYear + " years ago";
-	}
+	
 	
 	private void bounceBackHeader(){
 		int yTranslate = state == State.REFRESHING ? -(headerContainer.getHeight() - header.getHeight()) : -headerContainer.getHeight();

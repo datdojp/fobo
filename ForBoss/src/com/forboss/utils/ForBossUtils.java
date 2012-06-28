@@ -418,39 +418,129 @@ public class ForBossUtils {
 	}
 
 	public static void get(String url, Handler taskFinishedHandler) {
-		// reference: http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
-		HttpClient httpclient = new DefaultHttpClient();
-		HttpGet httpget = new HttpGet(url);
+		GetUrlRunnable getUrlRunnable = new GetUrlRunnable();
+		getUrlRunnable.setUrl(url);
+		getUrlRunnable.setTaskFinishedHandler(taskFinishedHandler);
+		(new Thread(getUrlRunnable)).start();
+	}
 
-		try {
-			HttpResponse response = httpclient.execute(httpget);
-			InputStream input = response.getEntity().getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-			String json = reader.readLine();
-			JSONTokener tokener = new JSONTokener(json);
+	private static class GetUrlRunnable implements Runnable {
+		private String url;
+		private Handler taskFinishedHandler;
+		
+		
+		public String getUrl() {
+			return url;
+		}
+
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
+
+
+		public Handler getTaskFinishedHandler() {
+			return taskFinishedHandler;
+		}
+
+
+		public void setTaskFinishedHandler(Handler taskFinishedHandler) {
+			this.taskFinishedHandler = taskFinishedHandler;
+		}
+
+
+		@Override
+		public void run() {
+			// reference: http://www.androidsnippets.com/executing-a-http-post-request-with-httpclient
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(url);
+
 			try {
-				JSONObject finalResult = new JSONObject(tokener);
-				// boolean success = (Boolean)finalResult.get("success");
+				HttpResponse response = httpclient.execute(httpget);
+				InputStream input = response.getEntity().getContent();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+				String json = reader.readLine();
+				JSONTokener tokener = new JSONTokener(json);
+				try {
+					JSONObject finalResult = new JSONObject(tokener);
+					// boolean success = (Boolean)finalResult.get("success");
 
-				if (taskFinishedHandler != null)  {
-					Message message = taskFinishedHandler.obtainMessage();
-					message.obj = finalResult;
-					taskFinishedHandler.sendMessage(message);
+					if (taskFinishedHandler != null)  {
+						Message message = taskFinishedHandler.obtainMessage();
+						message.obj = finalResult;
+						taskFinishedHandler.sendMessage(message);
+					}
+
+				} catch (JSONException e) {
+					Log.e("ForBossUtils", e.toString());
+				}
+				finally {
+					if (input != null) input.close();
 				}
 
-			} catch (JSONException e) {
+			} catch (ClientProtocolException e) {
 				Log.e("ForBossUtils", e.toString());
-			}
-			finally {
-				if (input != null) input.close();
-			}
-
-		} catch (ClientProtocolException e) {
-			Log.e("ForBossUtils", e.toString());
-			e.printStackTrace();
-		} catch (IOException e) {
-			Log.e("ForBossUtils", e.toString());
-			e.printStackTrace();
-		} 
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.e("ForBossUtils", e.toString());
+				e.printStackTrace();
+			}		
+		}
+	}
+	
+	public static String getLastUpdateInfo(Date lastUpdate) {
+		if (lastUpdate == null) {
+			return "Chưa bao giờ";
+		}
+		
+		Date now = new Date();
+		long timeDiff = now.getTime() - lastUpdate.getTime();
+		long deltaSecond = timeDiff / 1000;
+		if (deltaSecond < 5) {
+			return "Mới tức thi";
+		}
+		if (deltaSecond < 60) {
+			return deltaSecond + " giây trước";
+		}
+		if (deltaSecond < 120) {
+			return "Một phút trước";
+		}
+		long deltaMinute = timeDiff / (60 * 1000);
+		if (deltaMinute < 60) {
+			return deltaMinute + " phút trước";
+		}
+		if (deltaMinute < 120) {
+			return "Một giờ trước";
+		}
+		long deltaHour = timeDiff / (60 * 60 * 1000);
+		if (deltaHour < 24) {
+			return deltaHour + " giờ trước";
+		}
+		long deltaDay = timeDiff / (24 * 60 * 60 * 1000);
+		if (deltaDay < 2) {
+			return "Hôm qua";
+		}
+		if (deltaDay < 7) {
+			return deltaDay + " ngày trước";
+		}
+		long deltaWeek = timeDiff / (7 * 24 * 60 * 60 * 1000);
+		if (deltaWeek < 2) {
+			return "Tuần trước";
+		}
+		if (deltaDay < 31) {
+			return deltaWeek + " tuần trước";
+		}
+		if (deltaDay < 61) {
+			return "Tháng trước";
+		}
+		long deltaMonth = timeDiff / (30 * 24 * 60 * 60 * 1000);
+		if (deltaDay < 365.25) {
+			return deltaMonth + " tháng trước";
+		}
+		if (deltaDay < 731) {
+			return "Năm ngoái";
+		}
+		long deltaYear = timeDiff / Math.round(365.25 * 24 * 60 * 60 * 1000);
+		return deltaYear + " năm trước";
 	}
 }
