@@ -7,6 +7,20 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 
 public class Article implements Serializable {
+	public static void copyContent(Article from, Article to) {
+		to.setTitle(from.getTitle());
+		to.setThumbnail(from.getThumbnail());
+		to.setBody(from.getBody());
+		//do not copy htmlContent, it is retrieved via another URL
+		//do not copy cateogry. Category never changes
+		to.setViews(from.getViews());
+		to.setLikes(from.getLikes());
+		to.setLink(from.getLink());
+		to.setCreatedTime(from.getCreatedTime());
+		to.setEventTime(from.getEventTime());
+		to.setEventPlace(from.getEventPlace());
+	}
+	
 	@SerializedName("ID")
 	@DatabaseField(id=true)
 	private String id;

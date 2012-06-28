@@ -57,6 +57,11 @@ public class ArticleService extends IntentService {
 
 	public void doSync() throws ServiceException {
 		String url = ARTICLE_LIST_URL + "/" + category;
+		long updateTime = ForBossUtils.getUpdateTimeOfCate(category, this);
+		if ( updateTime != 0) {
+			url = url + "/" + updateTime;
+		}
+		Log.d(this.getClass().getName(), "Sync with URL: " + url);
     	final HttpUriRequest request = new HttpGet(url);
         execute(request, new ExecutorFunction() {
 			@Override
@@ -69,8 +74,6 @@ public class ArticleService extends IntentService {
 	
 	public void parseAndInsertContent(InputStream jsonStream) throws SQLException {
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
-
-		//TODO: add Update_Time
 		
 		// parse json string into entity objects
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -80,10 +83,14 @@ public class ArticleService extends IntentService {
 
 		// check if the news item exists in the database --> insert into database if not
 		for (Article anArticle : articles) {
-			if(articleDao.queryForId(anArticle.getId()) == null) {
+			Article articleFromDb = articleDao.queryForId(anArticle.getId());
+			if(articleFromDb == null) {
 				Log.d(this.getClass().getName(), "Inserting article with title " + anArticle.getTitle());
 				articleDao.create(anArticle);
-			}// TODO: if exist, update
+			} else {
+				Article.copyContent(anArticle, articleFromDb);
+				articleDao.update(articleFromDb);
+			}
 		}
 	}
 	
