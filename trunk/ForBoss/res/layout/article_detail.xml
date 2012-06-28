@@ -6,18 +6,35 @@
 
     <include layout="@layout/top_menu" />
 
-    <include layout="@layout/header_line"/>
-    
+    <include layout="@layout/header_line" />
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/sharebox"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_eye" />
 
         <TextView
             android:id="@+id/nViewText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="20dp"
+            android:lines="2"
             android:text="xxx người đã đọc bài viết"
+            android:textAppearance="@style/general_text_style"
+            android:textSize="11dp"
             android:width="120dp" />
 
         <LinearLayout
@@ -25,25 +42,36 @@
             android:layout_height="wrap_content"
             android:gravity="right" >
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_heart" />
+
             <TextView
                 android:id="@+id/nLikeText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="right"
+                android:layout_marginLeft="5dp"
+                android:lines="2"
                 android:text="xxx người thích bài viết"
+                android:textAppearance="@style/general_text_style"
+                android:textSize="11dp"
                 android:width="120dp" />
         </LinearLayout>
     </LinearLayout>
 
     <ScrollView
-        android:layout_weight="0.6"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="fill_parent"
+        android:layout_weight="0.6"
+        android:padding="10dp" >
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" >
+            android:background="@drawable/contentbox"
+            android:orientation="vertical"
+            android:padding="10dp" >
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -58,19 +86,26 @@
                     android:id="@+id/time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="time" />
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="time"
+                    android:textAppearance="@style/general_text_style"
+                    android:textSize="12dp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/titleText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Title" />
+                android:text="Title"
+                android:textAppearance="@style/general_text_style"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/thumbnailImage"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:src="@drawable/loading_image" />
 
             <WebView

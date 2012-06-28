@@ -5,6 +5,11 @@
 	    <item name="android:textColor">#EDDB80</item>
 	</style>
 	
+    <style name="general_text_style_small" parent="@android:style/Widget.TextView">
+	    <item name="android:textSize">12dp</item>
+	    <item name="android:textColor">#EDDB80</item>
+	</style>
+	
     <style name="cateogory_text_style" parent="@android:style/Widget.TextView">
 	    <item name="android:textSize">20dp</item>
 	    <item name="android:textColor">#FBD687</item>

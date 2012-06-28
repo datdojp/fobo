@@ -24,7 +24,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Yêu thích" />
+            android:text="Yêu thích"
+            android:textAppearance="@style/general_text_style_small"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -44,7 +46,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Đăng facebook" />
+            android:text="Đăng facebook"
+            android:textAppearance="@style/general_text_style_small"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -64,7 +68,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Đăng linkedin" />
+            android:text="Đăng linkedin"
+            android:textAppearance="@style/general_text_style_small"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>

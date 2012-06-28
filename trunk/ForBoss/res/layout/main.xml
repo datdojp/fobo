@@ -10,8 +10,8 @@
     <include layout="@layout/login" />
 
     <include layout="@layout/tab_header" />
-    
-    <include layout="@layout/header_line"/>
+
+    <include layout="@layout/header_line" />
 
     <LinearLayout
         android:id="@+id/articleListWrapper"

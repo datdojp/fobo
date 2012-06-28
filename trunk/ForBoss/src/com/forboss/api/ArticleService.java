@@ -70,6 +70,8 @@ public class ArticleService extends IntentService {
 	public void parseAndInsertContent(InputStream jsonStream) throws SQLException {
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
 
+		//TODO: add Update_Time
+		
 		// parse json string into entity objects
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gsonParser = gsonBuilder.create();
@@ -81,7 +83,7 @@ public class ArticleService extends IntentService {
 			if(articleDao.queryForId(anArticle.getId()) == null) {
 				Log.d(this.getClass().getName(), "Inserting article with title " + anArticle.getTitle());
 				articleDao.create(anArticle);
-			}
+			}// TODO: if exist, update
 		}
 	}
 	
@@ -152,21 +154,29 @@ public class ArticleService extends IntentService {
 		}
 	}
 
+	private static boolean isSyncing = false;
+	
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		// prevent 2 sync run at the same time
+		if (isSyncing == true) {
+			return;
+		}
+		
+		// TODO: check internet connection
+		
 		try {
+			isSyncing = true;
 			List<String> categoryList = ForBossUtils.getCategoryList();
 			for(String aCate : categoryList) {
 				category = aCate;
 				doSync();
 			}
+			isSyncing = false;
 			ForBossViewPagerFragmentActivity.getInstance().refreshArticleList();
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), "Problem with sync");
 			e.printStackTrace();
 		}
-
-		//TODO: update content
-		
 	}
 }

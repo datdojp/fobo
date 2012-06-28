@@ -75,6 +75,9 @@ public class ArticleDetailActivity extends Activity {
 
 		TextView titleText = (TextView) findViewById(R.id.titleText);
 		titleText.setText(article.getTitle());
+		
+		TextView time = (TextView) findViewById(R.id.time);
+		time.setText(ForBossUtils.getLastUpdateInfo(article.getCreatedTimeInDate()));
 
 		setViewText();
 		setLikeText();
@@ -169,6 +172,7 @@ public class ArticleDetailActivity extends Activity {
 
 	private void setArticleContent() {
 		WebView htmlContent = (WebView) findViewById(R.id.htmlContent);
+		htmlContent.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		htmlContent.getSettings().setLoadWithOverviewMode(true);
 		htmlContent.getSettings().setUseWideViewPort(true);
 		htmlContent.getSettings().setDefaultFontSize(32);

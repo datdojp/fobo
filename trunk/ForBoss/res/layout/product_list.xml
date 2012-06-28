@@ -15,7 +15,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/slogan" />
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:text="@string/slogan"
+        android:textAppearance="@style/general_text_style_small" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -29,6 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:adjustViewBounds="true"
+            android:background="@drawable/golden_box"
             android:scaleType="fitXY"
             android:src="@drawable/product01" />
 
@@ -37,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:adjustViewBounds="true"
+            android:background="@drawable/golden_box"
             android:scaleType="fitXY"
             android:src="@drawable/product02" />
 
@@ -45,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:adjustViewBounds="true"
+            android:background="@drawable/golden_box"
             android:scaleType="fitXY"
             android:src="@drawable/product03" />
 
@@ -56,16 +62,17 @@
             android:scaleType="fitXY"
             android:src="@drawable/right_arrow" />
     </LinearLayout>
-    
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="right">
-        <ImageView 
+        android:gravity="right"
+        android:orientation="vertical" >
+
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/but_hide"/>
+            android:src="@drawable/but_hide" />
     </LinearLayout>
 
 </LinearLayout>

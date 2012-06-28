@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,6 +59,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.forboss.ForBossApplication;
+import com.forboss.data.model.Article;
+import com.j256.ormlite.dao.Dao;
 
 public class ForBossUtils {
 	private static Map<String, Object> bundleData = new HashMap<String, Object>();
@@ -542,5 +545,12 @@ public class ForBossUtils {
 		}
 		long deltaYear = timeDiff / Math.round(365.25 * 24 * 60 * 60 * 1000);
 		return deltaYear + " năm trước";
+	}
+	
+	public static List<Article> getArticleOfCategoryFromDb(String cate, Dao<Article, String> articleDao) throws SQLException {
+		Article sampleArticle = new Article();
+		sampleArticle.setCategory(cate);
+		List<Article> data = articleDao.queryForMatching(sampleArticle);
+		return data;
 	}
 }
