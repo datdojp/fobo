@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import com.forboss.ArticleDetailActivity;
 import com.forboss.ForBossApplication;
+import com.forboss.ForBossViewPagerFragmentActivity;
 import com.forboss.R;
 import com.forboss.custom.PullToRefreshListView;
 import com.forboss.custom.PullToRefreshListView.OnRefreshListener;
@@ -44,10 +46,11 @@ public class ArticleListBuilder {
 
 		this.root = inflater.inflate(R.layout.article_list, container, false);
 		ptrArticleList = (PullToRefreshListView) root.findViewById(R.id.article_ptr);
+		ptrArticleList.setLockScrollWhileRefreshing(true);
 		ptrArticleList.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-
+				ForBossViewPagerFragmentActivity.getInstance().syncArticleContent();
 			}
 		});
 		ptrArticleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,6 +62,9 @@ public class ArticleListBuilder {
 		});
 		ptrArticleListAdapter = new ArticleAdapter(context, ptrArticleListData);
 		ptrArticleList.setAdapter(ptrArticleListAdapter);
+		if (data != null && data.size() > 0 && data.get(0).getCategory().equals(ForBossUtils.getEventCategory())) {
+			((MarginLayoutParams) ptrArticleList.getLayoutParams()).setMargins(0, 0, 0, 0);
+		}
 
 		refreshHandler = new Handler() {
 			@Override
@@ -145,13 +151,13 @@ public class ArticleListBuilder {
 				TextView titleText = (TextView) view.findViewById(R.id.titleText);
 				titleText.setText(article.getTitle());
 
+				// set place
+				TextView placeText = (TextView) view.findViewById(R.id.placeText);
+				placeText.setText("@ " + article.getEventPlace());
+
 				// set time
 				TextView timeText = (TextView) view.findViewById(R.id.timeText);
 				timeText.setText(article.getEventTime());
-
-				// set place
-				TextView placeText = (TextView) view.findViewById(R.id.placeText);
-				placeText.setText(article.getEventPlace());
 
 				// set detail button
 				view.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +169,7 @@ public class ArticleListBuilder {
 						context.startActivity(intent);
 					}
 				});
-			// POST
+				// POST
 			} else {
 				// set thumbnail
 				if (article.getPictureLocation() != null) {
@@ -188,7 +194,7 @@ public class ArticleListBuilder {
 				// set title
 				TextView title = (TextView) view.findViewById(R.id.title);
 				title.setText(article.getTitle());
-				
+
 				// set time
 				TextView time = (TextView) view.findViewById(R.id.time);
 				time.setText(ForBossUtils.getLastUpdateInfo(article.getCreatedTimeInDate()));
@@ -215,6 +221,14 @@ public class ArticleListBuilder {
 
 	public void setPtrArticleListData(List<Article> ptrArticleListData) {
 		this.ptrArticleListData = ptrArticleListData;
+	}
+
+	public PullToRefreshListView getPtrArticleList() {
+		return ptrArticleList;
+	}
+
+	public void setPtrArticleList(PullToRefreshListView ptrArticleList) {
+		this.ptrArticleList = ptrArticleList;
 	}
 
 

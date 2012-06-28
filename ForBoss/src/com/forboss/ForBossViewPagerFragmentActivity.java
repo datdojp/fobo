@@ -70,6 +70,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 	// handlers
 	private Handler afterSyncArticleHandler;
+	private Handler afterPTRArticleHandler;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -103,6 +104,36 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 			}
 		};
+
+		afterPTRArticleHandler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				// update content
+				try {
+					Dao<Article, String> articleDao = DatabaseHelper.getHelper(instance).getArticleDao();
+					for(String cate : cateDataMapping.keySet()) {
+						List<Article> data = cateDataMapping.get(cate);
+						data.clear();
+						List<Article> newData = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao);
+						data.addAll(newData);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+				// close all pull-to-refresh + notify all
+				for(String cate : cateBuilderMapping.keySet()) {
+					ArticleListBuilder builder = cateBuilderMapping.get(cate);
+					if (builder != null && builder.getPtrArticleList() != null) {
+						builder.getPtrArticleList().onRefreshComplete();
+						builder.refresh();
+					}
+				}
+
+				// sync pictures
+				syncArticlePicture();
+			}
+		};
 	}
 
 	private void initArticleList() throws SQLException {
@@ -112,9 +143,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 		List<Fragment> fragments =  new ArrayList<Fragment>();
 		for(String aCate : ForBossUtils.getArticleCategoryList()) {
-			Article sampleArticle = new Article();
-			sampleArticle.setCategory(aCate);
-			List<Article> data = articleDao.queryForMatching(sampleArticle);
+			List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(aCate, articleDao);
 
 			ArticleListFragment aFragment = (ArticleListFragment) Fragment.instantiate(this, ArticleListFragment.class.getName());
 			aFragment.setContext(this);
@@ -219,7 +248,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 					ForBossUtils.alert(instance, "Email không đúng chuẩn.");
 					return;
 				}
-				
+
 				// handler to handle when the server response
 				Handler sendEmailFinishedHandler = new Handler() {
 					@Override
@@ -254,20 +283,18 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		eventListWrapper = (ViewGroup) findViewById(R.id.eventListWrapper);
 
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
-		Article sampleArticle = new Article();
-		sampleArticle.setCategory(ForBossUtils.getEventCategory());
-		eventData = articleDao.queryForMatching(sampleArticle);
+		eventData = ForBossUtils.getArticleOfCategoryFromDb(ForBossUtils.getEventCategory(), articleDao);
 
 		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-																	LinearLayout.LayoutParams.FILL_PARENT, 
-																	LinearLayout.LayoutParams.FILL_PARENT);
+				LinearLayout.LayoutParams.FILL_PARENT, 
+				LinearLayout.LayoutParams.FILL_PARENT);
 		ArticleListBuilder builder = new ArticleListBuilder();
 		eventListWrapper.addView(builder.build(this, this.getLayoutInflater(), eventListWrapper, eventData));
-		
+
 		// store data and builder
 		cateBuilderMapping.put(ForBossUtils.getEventCategory(), builder);
 		cateDataMapping.put(ForBossUtils.getEventCategory(), eventData);
-		
+
 		// set the category title
 		TextView categoryText = (TextView) eventListWrapper.findViewById(R.id.categoryText);
 		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getEventCategory()) );
@@ -283,12 +310,12 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		return userEmail != null;
 	}
 
-	private void syncArticleContent() {
+	public void syncArticleContent() {
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ArticleService.class);
 		this.startService(intent);
 	}
 
-	private void syncArticlePicture() {
+	public void syncArticlePicture() {
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ArticlePictureLoadAsyncTask.class);
 		this.startService(intent);
 	}
@@ -305,6 +332,9 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			Message message = afterSyncArticleHandler.obtainMessage();
 			afterSyncArticleHandler.sendMessage(message);
 			isInitArticleList = true;
+		} else {
+			Message message = afterPTRArticleHandler.obtainMessage();
+			afterPTRArticleHandler.sendMessage(message);
 		}
 	}
 

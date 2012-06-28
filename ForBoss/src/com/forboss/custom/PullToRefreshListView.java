@@ -261,6 +261,8 @@ public class PullToRefreshListView extends ListView{
         setOnScrollListener(new OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+				// Dat: disable footer
+				/*
 				if( getAdapter().getCount() > 0 
 						&& getLastVisiblePosition() == getAdapter().getCount() - 1 
 						&& fetchMode != FetchMode.FETCH_OLDER ){
@@ -273,6 +275,7 @@ public class PullToRefreshListView extends ListView{
 		        		onRefreshListener.onRefresh();
 		        	}
 		        }
+		        */
 			}
 			
 			@Override
@@ -351,7 +354,7 @@ public class PullToRefreshListView extends ListView{
 					setHeaderPadding(newHeaderPadding);
 
 					//set last update information
-					txtLastUpdate.setText("Last update: " + ForBossUtils.getLastUpdateInfo(lastUpdate));
+					txtLastUpdate.setText("Cập nhật gần nhất: " + ForBossUtils.getLastUpdateInfo(lastUpdate));
 					
 					if(state == State.PULL_TO_REFRESH && headerPadding > 0){
 						setState(State.RELEASE_TO_REFRESH);

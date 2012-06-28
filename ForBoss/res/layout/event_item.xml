@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="75dp"
-    android:orientation="horizontal" >
+    android:layout_height="wrap_content"
+    android:background="@drawable/golden_box"
+    android:orientation="horizontal"
+    android:padding="2dp" >
 
     <ImageView
         android:id="@+id/thumbnailImage"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
+        android:layout_width="125dp"
+        android:layout_height="fill_parent"
         android:adjustViewBounds="true"
-        android:src="@drawable/loading_image" 
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/loading_image" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="horizontal" 
-        android:weightSum="1">
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:weightSum="1" >
 
         <LinearLayout
             android:layout_width="0dp"
@@ -30,25 +33,30 @@
                 android:id="@+id/titleText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Title: blah blah blah" />
-
-            <TextView
-                android:id="@+id/timeText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Time: blah blah blah" />
+                android:layout_marginBottom="10dp"
+                android:text="Title: blah blah blah"
+                android:textAppearance="@style/general_text_style_small"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/placeText"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Place: blah blah blah blah blah blah" />
+                android:text="Place: blah blah blah blah blah blah"
+                android:textAppearance="@style/general_text_style_small" />
+
+            <TextView
+                android:id="@+id/timeText"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Time: blah blah blah"
+                android:textAppearance="@style/general_text_style_small" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_weight="0.2"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
+            android:layout_weight="0.2"
             android:gravity="right|center_vertical" >
 
             <ImageView

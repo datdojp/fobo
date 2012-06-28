@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:adjustViewBounds="true"
-        android:background="@drawable/categorybox"
+        android:background="@drawable/golden_box"
         android:padding="2dp"
         android:scaleType="fitXY"
         android:src="@drawable/loading_image" />
