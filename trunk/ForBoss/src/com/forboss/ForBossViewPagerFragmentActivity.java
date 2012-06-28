@@ -114,7 +114,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 					for(String cate : cateDataMapping.keySet()) {
 						List<Article> data = cateDataMapping.get(cate);
 						data.clear();
-						List<Article> newData = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao);
+						List<Article> newData = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao, instance);
 						data.addAll(newData);
 					}
 				} catch (SQLException e) {
@@ -143,7 +143,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 		List<Fragment> fragments =  new ArrayList<Fragment>();
 		for(String aCate : ForBossUtils.getArticleCategoryList()) {
-			List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(aCate, articleDao);
+			List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(aCate, articleDao, instance);
 
 			ArticleListFragment aFragment = (ArticleListFragment) Fragment.instantiate(this, ArticleListFragment.class.getName());
 			aFragment.setContext(this);
@@ -283,7 +283,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		eventListWrapper = (ViewGroup) findViewById(R.id.eventListWrapper);
 
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
-		eventData = ForBossUtils.getArticleOfCategoryFromDb(ForBossUtils.getEventCategory(), articleDao);
+		eventData = ForBossUtils.getArticleOfCategoryFromDb(ForBossUtils.getEventCategory(), articleDao, instance);
 
 		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.FILL_PARENT, 

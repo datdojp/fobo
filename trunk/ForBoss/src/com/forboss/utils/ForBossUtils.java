@@ -15,6 +15,8 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +41,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -430,8 +433,8 @@ public class ForBossUtils {
 	private static class GetUrlRunnable implements Runnable {
 		private String url;
 		private Handler taskFinishedHandler;
-		
-		
+
+
 		public String getUrl() {
 			return url;
 		}
@@ -490,12 +493,12 @@ public class ForBossUtils {
 			}		
 		}
 	}
-	
+
 	public static String getLastUpdateInfo(Date lastUpdate) {
 		if (lastUpdate == null) {
 			return "Chưa bao giờ";
 		}
-		
+
 		Date now = new Date();
 		long timeDiff = now.getTime() - lastUpdate.getTime();
 		long deltaSecond = timeDiff / 1000;
@@ -546,14 +549,40 @@ public class ForBossUtils {
 		long deltaYear = timeDiff / Math.round(365.25 * 24 * 60 * 60 * 1000);
 		return deltaYear + " năm trước";
 	}
-	
-	public static List<Article> getArticleOfCategoryFromDb(String cate, Dao<Article, String> articleDao) throws SQLException {
+
+	private static final String PREF_CATE_UPDATETIME = "category.updatetime";
+	public static long getUpdateTimeOfCate(String cate, Context context) {
+		SharedPreferences settings = context.getSharedPreferences(PREF_CATE_UPDATETIME, Context.MODE_PRIVATE);
+		long res = settings.getLong(cate, 0);
+		return res;
+	}
+	public static List<Article> getArticleOfCategoryFromDb(String cate, Dao<Article, String> articleDao, Context context) throws SQLException {
 		Article sampleArticle = new Article();
 		sampleArticle.setCategory(cate);
 		List<Article> data = articleDao.queryForMatching(sampleArticle);
+		if (data != null && data.size() > 0) {
+			Collections.sort(data, new Comparator<Article>() {
+				@Override
+				public int compare(Article anAgenda, Article otherAgenda) {
+					if (anAgenda.getCreatedTime() < 
+							otherAgenda.getCreatedTime()) {
+						return 1;
+					}
+					if (anAgenda.getCreatedTime() > 
+					otherAgenda.getCreatedTime()) {
+						return -1;
+					}
+					return 0;
+				}
+			});
+			SharedPreferences settings = context.getSharedPreferences(PREF_CATE_UPDATETIME, Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putLong(cate, data.get(0).getCreatedTime());
+			editor.commit();
+		}
 		return data;
 	}
-	
+
 	public static void recycleBitmapOfImage(ImageView img, String tag) {
 		Bitmap oldBm = (Bitmap) img.getTag();
 		if (oldBm != null) {
