@@ -90,22 +90,13 @@ public class ArticleListBuilder {
 				if (view != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
 					if (thumbnailImage != null) {
-						recycleBitmapOfImage(thumbnailImage, "destroy");
+						ForBossUtils.recycleBitmapOfImage(thumbnailImage, "destroy");
 					}
 				}
 			}
 		}
 	}
 
-	private void recycleBitmapOfImage(ImageView img, String tag) {
-		Bitmap oldBm = (Bitmap) img.getTag();
-		if (oldBm != null) {
-			img.setImageBitmap(null);
-			img.setTag(null);
-			oldBm.recycle();
-			Log.d(this.getClass().getName(), "...........Recycle bitmap for " + tag + "..........");
-		}
-	}
 
 	public class ArticleAdapter extends ArrayAdapter<Article> {
 		private List<Article> data;
@@ -136,7 +127,7 @@ public class ArticleListBuilder {
 				// set thumbnail
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
-					recycleBitmapOfImage(thumbnailImage, "event");
+					ForBossUtils.recycleBitmapOfImage(thumbnailImage, "event");
 					try {
 						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
 						thumbnailImage.setImageBitmap(bm);
@@ -174,7 +165,7 @@ public class ArticleListBuilder {
 				// set thumbnail
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
-					recycleBitmapOfImage(thumbnailImage, "post");
+					ForBossUtils.recycleBitmapOfImage(thumbnailImage, "post");
 					try {
 						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
 						int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();

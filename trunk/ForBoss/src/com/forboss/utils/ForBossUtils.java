@@ -553,4 +553,14 @@ public class ForBossUtils {
 		List<Article> data = articleDao.queryForMatching(sampleArticle);
 		return data;
 	}
+	
+	public static void recycleBitmapOfImage(ImageView img, String tag) {
+		Bitmap oldBm = (Bitmap) img.getTag();
+		if (oldBm != null) {
+			img.setImageBitmap(null);
+			img.setTag(null);
+			oldBm.recycle();
+			Log.d(ForBossUtils.class.getName(), "...........Recycle bitmap for " + tag + "..........");
+		}
+	}
 }
