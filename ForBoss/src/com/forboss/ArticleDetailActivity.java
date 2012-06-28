@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -75,7 +76,7 @@ public class ArticleDetailActivity extends Activity {
 
 		TextView titleText = (TextView) findViewById(R.id.titleText);
 		titleText.setText(article.getTitle());
-		
+
 		TextView time = (TextView) findViewById(R.id.time);
 		time.setText(ForBossUtils.getLastUpdateInfo(article.getCreatedTimeInDate()));
 
@@ -85,8 +86,10 @@ public class ArticleDetailActivity extends Activity {
 		if (article.getPictureLocation() != null) {
 			ImageView thumbnailImage = (ImageView) findViewById(R.id.thumbnailImage);
 			try {
-				thumbnailImage.setImageBitmap(ForBossUtils.loadBitmapFromInternalStorage(
-						article.getPictureLocation(), this));
+				Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(
+						article.getPictureLocation(), this);
+				thumbnailImage.setImageBitmap(bm);
+				thumbnailImage.setTag(bm);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -137,7 +140,7 @@ public class ArticleDetailActivity extends Activity {
 				params.putString("link", article.getLink());
 
 				Utility.mFacebook.dialog(instance, "feed", params, new BaseDialogListener() {
-					
+
 					@Override
 					public void onComplete(Bundle values) {
 						ForBossUtils.alert(instance, "Đăng Facebook thành công.");
@@ -191,4 +194,14 @@ public class ArticleDetailActivity extends Activity {
 						"text/html", "UTF-8");
 	}
 
+	
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		ImageView thumbnailImage = (ImageView) findViewById(R.id.thumbnailImage);
+		if (thumbnailImage != null) {
+			ForBossUtils.recycleBitmapOfImage(thumbnailImage, "article detail");
+		}
+	}
 }
