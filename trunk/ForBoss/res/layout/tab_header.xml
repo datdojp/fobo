@@ -8,11 +8,12 @@
     android:gravity="top"
     android:orientation="horizontal" >
 
-    <ImageView
+    <ImageButton
         android:id="@+id/productListButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/but_show" />
+        android:src="@drawable/but_show" 
+        android:background="#00000000"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
