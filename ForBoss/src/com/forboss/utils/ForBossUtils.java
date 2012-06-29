@@ -424,6 +424,9 @@ public class ForBossUtils {
 	}
 
 	public static void get(String url, Handler taskFinishedHandler) {
+		if (!isNetworkAvailable()) {
+			return;
+		}
 		GetUrlRunnable getUrlRunnable = new GetUrlRunnable();
 		getUrlRunnable.setUrl(url);
 		getUrlRunnable.setTaskFinishedHandler(taskFinishedHandler);

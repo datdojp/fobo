@@ -27,6 +27,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.forboss.ForBossViewPagerFragmentActivity;
 import com.forboss.api.exception.ServiceException;
@@ -40,7 +41,7 @@ import com.google.gson.stream.JsonReader;
 import com.j256.ormlite.dao.Dao;
 
 public class ArticleService extends IntentService {
-	
+
 	public ArticleService() {
 		super("ArticleService");
 	}
@@ -48,7 +49,7 @@ public class ArticleService extends IntentService {
 	private static final String ARTICLE_LIST_URL = ForBossUtils.getConfig("API_URL") + "/" + "api/mobile/posts";
 	private HttpClient mHttpClient;
 	private String category;
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -62,19 +63,19 @@ public class ArticleService extends IntentService {
 			url = url + "/" + updateTime;
 		}
 		Log.d(this.getClass().getName(), "Sync with URL: " + url);
-    	final HttpUriRequest request = new HttpGet(url);
-        execute(request, new ExecutorFunction() {
+		final HttpUriRequest request = new HttpGet(url);
+		execute(request, new ExecutorFunction() {
 			@Override
 			public void executeJob(InputStream input) throws SQLException,
-					ParseException {
+			ParseException {
 				parseAndInsertContent(input);
 			}
 		});
 	}
-	
+
 	public void parseAndInsertContent(InputStream jsonStream) throws SQLException {
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
-		
+
 		// parse json string into entity objects
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gsonParser = gsonBuilder.create();
@@ -93,38 +94,38 @@ public class ArticleService extends IntentService {
 			}
 		}
 	}
-	
-	public void execute(HttpUriRequest request, ExecutorFunction func) throws ServiceException {
-        try {
-            final HttpResponse resp = mHttpClient.execute(request);
-            final int status = resp.getStatusLine().getStatusCode();
-            if (status != HttpStatus.SC_OK) {
-                throw new ServiceException("Unexpected server response " + resp.getStatusLine()
-                        + " for " + request.getRequestLine());
-            }
 
-            final InputStream input = resp.getEntity().getContent();
-            try {
-                func.executeJob(input);
-            } catch (SQLException e) {
+	public void execute(HttpUriRequest request, ExecutorFunction func) throws ServiceException {
+		try {
+			final HttpResponse resp = mHttpClient.execute(request);
+			final int status = resp.getStatusLine().getStatusCode();
+			if (status != HttpStatus.SC_OK) {
+				throw new ServiceException("Unexpected server response " + resp.getStatusLine()
+						+ " for " + request.getRequestLine());
+			}
+
+			final InputStream input = resp.getEntity().getContent();
+			try {
+				func.executeJob(input);
+			} catch (SQLException e) {
 				throw new ServiceException("Unexpected error while persisting content for "+ request.getRequestLine() +"\ncaused by " +e );
 			} catch (ParseException e) {
 				throw new ServiceException("Unexpected error while persisting content for "+ request.getRequestLine() +"\ncaused by " +e );
 			} finally {
-                if (input != null) input.close();
-            }
-        } catch (ServiceException e) {
-            throw e;
-        } catch (IOException e) {
-            throw new ServiceException("Problem reading remote response for "
-                    + request.getRequestLine(), e);
-        }
-    }
-	
+				if (input != null) input.close();
+			}
+		} catch (ServiceException e) {
+			throw e;
+		} catch (IOException e) {
+			throw new ServiceException("Problem reading remote response for "
+					+ request.getRequestLine(), e);
+		}
+	}
+
 	interface ExecutorFunction {
-    	void executeJob(InputStream input) throws SQLException, ParseException;
-    }
-	
+		void executeJob(InputStream input) throws SQLException, ParseException;
+	}
+
 	/**
 	 * Generate and return a {@link HttpClient} configured for general use,
 	 * including setting an application-specific user-agent string.
@@ -143,7 +144,7 @@ public class ArticleService extends IntentService {
 
 		return client;
 	}
-	
+
 	/**
 	 * Build and return a user-agent string that can identify this application
 	 * to remote servers. Contains the package name and version code.
@@ -162,28 +163,33 @@ public class ArticleService extends IntentService {
 	}
 
 	private static boolean isSyncing = false;
-	
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		// prevent 2 sync run at the same time
 		if (isSyncing == true) {
 			return;
 		}
-		
-		// TODO: check internet connection
-		
-		try {
+
+		if (!ForBossUtils.isNetworkAvailable()) {
+			Toast.makeText(ForBossViewPagerFragmentActivity.getInstance(), "Không có kết nối mạng. Không thể lấy dữ liệu từ server", Toast.LENGTH_SHORT).show();
+//			ForBossUtils.alert(ForBossViewPagerFragmentActivity.getInstance(), "Không có kết nối mạng. Không thể lấy dữ liệu từ server");
+		} else {
 			isSyncing = true;
-			List<String> categoryList = ForBossUtils.getCategoryList();
-			for(String aCate : categoryList) {
-				category = aCate;
-				doSync();
+			try {
+				List<String> categoryList = ForBossUtils.getCategoryList();
+				for(String aCate : categoryList) {
+					category = aCate;
+					doSync();
+				}
+			} catch (Exception e) {
+				ForBossUtils.alert(this, "Xảy ra lỗi trong quá trình lấy dữ liệu từ server");
+				Log.e(this.getClass().getName(), "Problem with sync");
+				e.printStackTrace();
 			}
 			isSyncing = false;
-			ForBossViewPagerFragmentActivity.getInstance().refreshArticleList();
-		} catch (Exception e) {
-			Log.e(this.getClass().getName(), "Problem with sync");
-			e.printStackTrace();
 		}
+
+		ForBossViewPagerFragmentActivity.getInstance().refreshArticleList();
 	}
 }

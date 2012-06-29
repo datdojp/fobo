@@ -223,7 +223,9 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.addView(mainWrapper, productListWrapper);
 			}
 		});
-		articleButton.performClick();
+//		ImageButton productListButton = (ImageButton) findViewById(R.id.productListButton);
+//		p
+//		articleButton.performClick();
 	}
 
 	private void initLoginLayout() {
@@ -337,5 +339,4 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			afterPTRArticleHandler.sendMessage(message);
 		}
 	}
-
 }
