@@ -43,7 +43,7 @@
         <include layout="@layout/header_seperator"/>
 
         <ImageButton
-            android:id="@+id/moreButton"
+            android:id="@+id/c360Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"

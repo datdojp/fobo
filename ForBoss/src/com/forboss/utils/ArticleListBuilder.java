@@ -112,7 +112,8 @@ public class ArticleListBuilder {
 			if (convertView != null) {
 				view = convertView;
 			} else {
-				if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+				if (article.getCategory().equals(ForBossUtils.getEventCategory()) 
+						|| article.getCategory().equals(ForBossUtils.getC360Category())) {
 					view = inflater.inflate(R.layout.event_item, null);
 				} else {
 					view = inflater.inflate(R.layout.article_item, null);
@@ -122,8 +123,9 @@ public class ArticleListBuilder {
 
 			view.setTag(article);
 
-			// EVENT
-			if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+			// EVENT || 360
+			if (article.getCategory().equals(ForBossUtils.getEventCategory())
+					|| article.getCategory().equals(ForBossUtils.getC360Category())) {
 				// set thumbnail
 				if (article.getPictureLocation() != null) {
 					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
@@ -142,13 +144,26 @@ public class ArticleListBuilder {
 				TextView titleText = (TextView) view.findViewById(R.id.titleText);
 				titleText.setText(article.getTitle());
 
-				// set place
-				TextView placeText = (TextView) view.findViewById(R.id.placeText);
-				placeText.setText("@ " + article.getEventPlace());
+				// EVENT
+				if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+					// set place
+					TextView placeText = (TextView) view.findViewById(R.id.placeText);
+					placeText.setVisibility(View.VISIBLE);
+					placeText.setText("@ " + article.getEventPlace());
 
-				// set time
-				TextView timeText = (TextView) view.findViewById(R.id.timeText);
-				timeText.setText(article.getEventTime());
+					// set time
+					TextView timeText = (TextView) view.findViewById(R.id.timeText);
+					timeText.setVisibility(View.VISIBLE);
+					timeText.setText(article.getEventTime());
+				}
+
+				// 360
+				if (article.getCategory().equals(ForBossUtils.getC360Category())) {
+					// set body
+					TextView bodyText = (TextView) view.findViewById(R.id.bodyText);
+					bodyText.setVisibility(View.VISIBLE);
+					bodyText.setText(article.getBody());
+				}
 
 				// set detail button
 				view.setOnClickListener(new View.OnClickListener() {

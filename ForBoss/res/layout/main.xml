@@ -62,6 +62,16 @@
         -->
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/c360ListWrapper"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+        android:orientation="vertical" >
+
+        <include layout="@layout/title_header" />
+    </LinearLayout>
+
     <include layout="@layout/product_list" />
 
 </LinearLayout>
