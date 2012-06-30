@@ -412,9 +412,19 @@ public class ForBossUtils {
 			categoryList = new ArrayList<String>();
 			categoryList.addAll(getArticleCategoryList());
 			categoryList.add(getEventCategory());
+			categoryList.add(getC360Category());
 		}
 		return categoryList;
 	}
+	
+	private static String c360Category;
+	public static String getC360Category() {
+		if (c360Category == null) {
+			c360Category = getConfig("c360");
+		}
+		return c360Category;
+	}
+	
 	private static String eventCategory;
 	public static String getEventCategory() {
 		if (eventCategory == null) {

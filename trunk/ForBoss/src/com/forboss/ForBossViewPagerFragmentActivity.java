@@ -53,11 +53,12 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 	// wrappers
 	private ViewGroup mainWrapper;
-	private View articleListWrapper;
+	private ViewGroup articleListWrapper;
 	private ViewGroup eventListWrapper;
-	private View productListWrapper;
-	private View introLayoutWrapper;
-	private View loginLayoutWrapper;
+	private ViewGroup c360ListWrapper;
+	private ViewGroup productListWrapper;
+	private ViewGroup introLayoutWrapper;
+	private ViewGroup loginLayoutWrapper;
 
 	// article
 	private ViewGroup articleViewPagerIndicator;
@@ -66,7 +67,8 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 	// data
 	private Map<String, List<Article>> articleData;
-	private List<Article> eventData;
+//	private List<Article> eventData;
+//	private List<Article> c360Data;
 
 	// handlers
 	private Handler afterSyncArticleHandler;
@@ -82,8 +84,10 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 
 		// get wrapper from layout
 		mainWrapper = (ViewGroup) findViewById(R.id.mainWrapper);
-		productListWrapper = findViewById(R.id.productListWrapper);
-		introLayoutWrapper = findViewById(R.id.introLayoutWrapper);
+		productListWrapper = (ViewGroup) findViewById(R.id.productListWrapper);
+		introLayoutWrapper = (ViewGroup) findViewById(R.id.introLayoutWrapper);
+		eventListWrapper = (ViewGroup) findViewById(R.id.eventListWrapper);
+		c360ListWrapper = (ViewGroup) findViewById(R.id.c360ListWrapper);
 
 		// all initializations
 		initLoginLayout();
@@ -95,7 +99,8 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				introLayoutWrapper.setVisibility(View.GONE);
 				try {
 					initArticleList();
-					initEventList();
+					initNotPagedList(ForBossUtils.getEventCategory(), eventListWrapper);
+					initNotPagedList(ForBossUtils.getC360Category(), c360ListWrapper);
 					syncArticlePicture();
 				} catch (SQLException e) {
 					Log.e(this.getClass().getName(), e.getMessage());
@@ -137,7 +142,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	}
 
 	private void initArticleList() throws SQLException {
-		articleListWrapper = findViewById(R.id.articleListWrapper);
+		articleListWrapper = (ViewGroup) findViewById(R.id.articleListWrapper);
 		articleViewPagerIndicator = (ViewGroup) articleListWrapper.findViewById(R.id.viewPagerIndicator);
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
 
@@ -203,6 +208,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.addView(mainWrapper, articleListWrapper);
 				ForBossUtils.removeView(mainWrapper, eventListWrapper);
 				ForBossUtils.removeView(mainWrapper, productListWrapper);
+				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
 			}
 		});
 		ImageButton eventButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.eventButton);
@@ -212,24 +218,34 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.removeView(mainWrapper, articleListWrapper);
 				ForBossUtils.addView(mainWrapper, eventListWrapper);
 				ForBossUtils.removeView(mainWrapper, productListWrapper);
+				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
 			}
 		});
-		ImageButton moreButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.moreButton);
-		moreButton.setOnClickListener(new View.OnClickListener() {
+		ImageButton c360Button = (ImageButton) tabHeaderWrapper.findViewById(R.id.c360Button);
+		c360Button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ForBossUtils.removeView(mainWrapper, articleListWrapper);
+				ForBossUtils.removeView(mainWrapper, eventListWrapper);
+				ForBossUtils.removeView(mainWrapper, productListWrapper);
+				ForBossUtils.addView(mainWrapper, c360ListWrapper);
+			}
+		});
+		ImageButton productListButton = (ImageButton) findViewById(R.id.productListButton);
+		productListButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				ForBossUtils.removeView(mainWrapper, articleListWrapper);
 				ForBossUtils.removeView(mainWrapper, eventListWrapper);
 				ForBossUtils.addView(mainWrapper, productListWrapper);
+				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
 			}
 		});
-//		ImageButton productListButton = (ImageButton) findViewById(R.id.productListButton);
-//		p
-//		articleButton.performClick();
+		articleButton.performClick();
 	}
 
 	private void initLoginLayout() {
-		loginLayoutWrapper = findViewById(R.id.loginLayoutWrapper);
+		loginLayoutWrapper = (ViewGroup) findViewById(R.id.loginLayoutWrapper);
 		if (isLoggin()) {
 			loginLayoutWrapper.setVisibility(View.GONE);
 			return;
@@ -280,7 +296,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			}
 		});
 	}
-
+/*
 	private void initEventList() throws SQLException {
 		eventListWrapper = (ViewGroup) findViewById(R.id.eventListWrapper);
 
@@ -300,6 +316,25 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		// set the category title
 		TextView categoryText = (TextView) eventListWrapper.findViewById(R.id.categoryText);
 		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getEventCategory()) );
+	}
+	*/
+	private void initNotPagedList(String cate, ViewGroup wrapper) throws SQLException {
+		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
+		List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao, instance);
+
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.FILL_PARENT, 
+				LinearLayout.LayoutParams.FILL_PARENT);
+		ArticleListBuilder builder = new ArticleListBuilder();
+		wrapper.addView(builder.build(this, this.getLayoutInflater(), wrapper, data));
+
+		// store data and builder
+		cateBuilderMapping.put(cate, builder);
+		cateDataMapping.put(cate, data);
+
+		// set the category title
+		TextView categoryText = (TextView) wrapper.findViewById(R.id.categoryText);
+		categoryText.setText( ForBossUtils.getConfig(cate) );
 	}
 
 	private String getUserEmail() {
