@@ -16,11 +16,12 @@ public class ArticleListFragment extends Fragment {
 	private Context context;
 	private ArticleListBuilder articleListBuilder = new ArticleListBuilder();
 	private List<Article> data;
+	private String category;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View result = articleListBuilder.build(context, inflater, container, data);
+		View result = articleListBuilder.build(context, inflater, container, data, category);
 		return result;
 	}
 
@@ -53,4 +54,13 @@ public class ArticleListFragment extends Fragment {
 	public void setData(List<Article> data) {
 		this.data = data;
 	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
 }

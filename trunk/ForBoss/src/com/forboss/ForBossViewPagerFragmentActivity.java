@@ -55,7 +55,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	private ViewGroup mainWrapper;
 	private ViewGroup articleListWrapper;
 	private ViewGroup eventListWrapper;
-	private ViewGroup c360ListWrapper;
+//	private ViewGroup c360ListWrapper;
 	private ViewGroup productListWrapper;
 	private ViewGroup introLayoutWrapper;
 	private ViewGroup loginLayoutWrapper;
@@ -87,11 +87,11 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		productListWrapper = (ViewGroup) findViewById(R.id.productListWrapper);
 		introLayoutWrapper = (ViewGroup) findViewById(R.id.introLayoutWrapper);
 		eventListWrapper = (ViewGroup) findViewById(R.id.eventListWrapper);
-		c360ListWrapper = (ViewGroup) findViewById(R.id.c360ListWrapper);
+//		c360ListWrapper = (ViewGroup) findViewById(R.id.c360ListWrapper);
 
 		// all initializations
 		initLoginLayout();
-		initTabHeader();
+		ForBossUtils.initTabHeader(this);
 
 		afterSyncArticleHandler = new Handler() {
 			@Override
@@ -99,8 +99,8 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				introLayoutWrapper.setVisibility(View.GONE);
 				try {
 					initArticleList();
-					initNotPagedList(ForBossUtils.getEventCategory(), eventListWrapper);
-					initNotPagedList(ForBossUtils.getC360Category(), c360ListWrapper);
+//					initNotPagedList(ForBossUtils.getEventCategory(), eventListWrapper);
+//					initNotPagedList(ForBossUtils.getC360Category(), c360ListWrapper);
 					syncArticlePicture();
 				} catch (SQLException e) {
 					Log.e(this.getClass().getName(), e.getMessage());
@@ -151,6 +151,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(aCate, articleDao, instance);
 
 			ArticleListFragment aFragment = (ArticleListFragment) Fragment.instantiate(this, ArticleListFragment.class.getName());
+			aFragment.setCategory(aCate);
 			aFragment.setContext(this);
 			aFragment.setData(data);
 			fragments.add(aFragment);
@@ -199,6 +200,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getArticleCategoryList().get(0)) );
 	}
 
+	/*
 	private void initTabHeader() {
 		View tabHeaderWrapper = findViewById(R.id.tabHeaderWrapper);
 		ImageButton articleButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.contentButton);
@@ -208,7 +210,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.addView(mainWrapper, articleListWrapper);
 				ForBossUtils.removeView(mainWrapper, eventListWrapper);
 				ForBossUtils.removeView(mainWrapper, productListWrapper);
-				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
+//				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
 			}
 		});
 		ImageButton eventButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.eventButton);
@@ -218,7 +220,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.removeView(mainWrapper, articleListWrapper);
 				ForBossUtils.addView(mainWrapper, eventListWrapper);
 				ForBossUtils.removeView(mainWrapper, productListWrapper);
-				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
+//				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
 			}
 		});
 		ImageButton c360Button = (ImageButton) tabHeaderWrapper.findViewById(R.id.c360Button);
@@ -228,7 +230,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.removeView(mainWrapper, articleListWrapper);
 				ForBossUtils.removeView(mainWrapper, eventListWrapper);
 				ForBossUtils.removeView(mainWrapper, productListWrapper);
-				ForBossUtils.addView(mainWrapper, c360ListWrapper);
+//				ForBossUtils.addView(mainWrapper, c360ListWrapper);
 			}
 		});
 		ImageButton productListButton = (ImageButton) findViewById(R.id.productListButton);
@@ -238,11 +240,12 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 				ForBossUtils.removeView(mainWrapper, articleListWrapper);
 				ForBossUtils.removeView(mainWrapper, eventListWrapper);
 				ForBossUtils.addView(mainWrapper, productListWrapper);
-				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
+//				ForBossUtils.removeView(mainWrapper, c360ListWrapper);
 			}
 		});
 		articleButton.performClick();
 	}
+	*/
 
 	private void initLoginLayout() {
 		loginLayoutWrapper = (ViewGroup) findViewById(R.id.loginLayoutWrapper);
@@ -318,6 +321,8 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		categoryText.setText( ForBossUtils.getConfig(ForBossUtils.getEventCategory()) );
 	}
 	*/
+	
+	/*
 	private void initNotPagedList(String cate, ViewGroup wrapper) throws SQLException {
 		Dao<Article, String> articleDao = DatabaseHelper.getHelper(this).getArticleDao();
 		List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao, instance);
@@ -336,6 +341,7 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		TextView categoryText = (TextView) wrapper.findViewById(R.id.categoryText);
 		categoryText.setText( ForBossUtils.getConfig(cate) );
 	}
+	*/
 
 	private String getUserEmail() {
 		return ( (EditText)loginLayoutWrapper.findViewById(R.id.userEmailEdit) ).getText().toString().trim();
@@ -373,5 +379,25 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			Message message = afterPTRArticleHandler.obtainMessage();
 			afterPTRArticleHandler.sendMessage(message);
 		}
+	}
+	
+	public void navigateToEventList() {
+		Intent intent = new Intent(this, EventListActivity.class);
+		startActivity(intent);
+	}
+	
+	public void navigateToC360List() {
+		Intent intent = new Intent(this, C360ListActivity.class);
+		startActivity(intent);
+	}
+	
+	public void navigateToProductList() {
+		Intent intent = new Intent(this, ProductListActivity.class);
+		startActivity(intent);
+	}
+	
+	public void navigateToFavArticleList() {
+		Intent intent = new Intent(this, FavArticleListActivity.class);
+		startActivity(intent);
 	}
 }

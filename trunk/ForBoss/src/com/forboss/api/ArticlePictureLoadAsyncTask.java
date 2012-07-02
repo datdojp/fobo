@@ -2,6 +2,7 @@ package com.forboss.api;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,21 +34,24 @@ public class ArticlePictureLoadAsyncTask extends IntentService {
 			return;
 		}
 		for(String aCate : ForBossUtils.getCategoryList()) {
-			for(Article anArticle : ForBossViewPagerFragmentActivity.cateDataMapping.get(aCate)) {
-				if (anArticle.getThumbnail() != null && anArticle.getPictureLocation() == null) {
-					try {
-						String pictureLocation = "article_" + anArticle.getId();
-						ForBossUtils.downloadAndSaveToInternalStorage(
-								StringUtils.replace(anArticle.getThumbnail(), " ", "%20"), 
-								pictureLocation, this);
-						anArticle.setPictureLocation(pictureLocation);
-						articleDao.update(anArticle);
-					} catch (IOException e) {
-						Log.e(this.getClass().getName(), e.getMessage());
-						e.printStackTrace();
-					} catch (SQLException e) {
-						Log.e(this.getClass().getName(), e.getMessage());
-						e.printStackTrace();
+			List<Article> data = ForBossViewPagerFragmentActivity.cateDataMapping.get(aCate);
+			if (data != null) {
+				for(Article anArticle : data) {
+					if (anArticle.getThumbnail() != null && anArticle.getPictureLocation() == null) {
+						try {
+							String pictureLocation = "article_" + anArticle.getId();
+							ForBossUtils.downloadAndSaveToInternalStorage(
+									StringUtils.replace(anArticle.getThumbnail(), " ", "%20"), 
+									pictureLocation, this);
+							anArticle.setPictureLocation(pictureLocation);
+							articleDao.update(anArticle);
+						} catch (IOException e) {
+							Log.e(this.getClass().getName(), e.getMessage());
+							e.printStackTrace();
+						} catch (SQLException e) {
+							Log.e(this.getClass().getName(), e.getMessage());
+							e.printStackTrace();
+						}
 					}
 				}
 			}

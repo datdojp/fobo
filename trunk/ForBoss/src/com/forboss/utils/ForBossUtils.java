@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,10 +60,19 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.forboss.C360ListActivity;
+import com.forboss.EventListActivity;
 import com.forboss.ForBossApplication;
+import com.forboss.ForBossViewPagerFragmentActivity;
+import com.forboss.ProductListActivity;
+import com.forboss.R;
+import com.forboss.TracableActivity;
 import com.forboss.data.model.Article;
+import com.forboss.data.utils.DatabaseHelper;
 import com.j256.ormlite.dao.Dao;
 
 public class ForBossUtils {
@@ -152,7 +162,14 @@ public class ForBossUtils {
 	 */
 	public static Bitmap loadBitmapFromInternalStorage(String fileName, ContextWrapper contextWrapper) throws FileNotFoundException {
 		FileInputStream fis = contextWrapper.openFileInput(fileName);
-		Bitmap bm = BitmapFactory.decodeStream(fis);
+		Bitmap bm;
+		try {
+			bm = BitmapFactory.decodeStream(fis);
+		} catch (OutOfMemoryError e) {
+			Log.d("ForBossUtils", "Fail to load: " + fileName);
+			e.printStackTrace();
+			return null;
+		}
 		return bm;
 	}
 
@@ -416,7 +433,7 @@ public class ForBossUtils {
 		}
 		return categoryList;
 	}
-	
+
 	private static String c360Category;
 	public static String getC360Category() {
 		if (c360Category == null) {
@@ -424,7 +441,11 @@ public class ForBossUtils {
 		}
 		return c360Category;
 	}
-	
+
+	public static boolean isSpecialCategory(String category) {
+		return getEventCategory().equals(category) || getC360Category().equals(category);
+	}
+
 	private static String eventCategory;
 	public static String getEventCategory() {
 		if (eventCategory == null) {
@@ -572,9 +593,10 @@ public class ForBossUtils {
 	public static List<Article> getArticleOfCategoryFromDb(String cate, Dao<Article, String> articleDao, Context context) throws SQLException {
 		Article sampleArticle = new Article();
 		sampleArticle.setCategory(cate);
-		List<Article> data = articleDao.queryForMatching(sampleArticle);
-		if (data != null && data.size() > 0) {
-			Collections.sort(data, new Comparator<Article>() {
+		List<Article> queryResults = articleDao.queryForMatching(sampleArticle);
+		List<Article> data = new CopyOnWriteArrayList<Article>();
+		if (queryResults != null && queryResults.size() > 0) {
+			Collections.sort(queryResults, new Comparator<Article>() {
 				@Override
 				public int compare(Article anAgenda, Article otherAgenda) {
 					if (anAgenda.getCreatedTime() < 
@@ -590,8 +612,10 @@ public class ForBossUtils {
 			});
 			SharedPreferences settings = context.getSharedPreferences(PREF_CATE_UPDATETIME, Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = settings.edit();
-			editor.putLong(cate, data.get(0).getCreatedTime());
+			editor.putLong(cate, queryResults.get(0).getCreatedTime());
 			editor.commit();
+
+			data.addAll(queryResults);
 		}
 		return data;
 	}
@@ -604,5 +628,92 @@ public class ForBossUtils {
 			oldBm.recycle();
 			Log.d(ForBossUtils.class.getName(), "...........Recycle bitmap for " + tag + "..........");
 		}
+	}
+
+	public static ArticleListBuilder initSpecialArticleList(Activity activity, String cate, ViewGroup wrapper) throws SQLException {
+		Dao<Article, String> articleDao = DatabaseHelper.getHelper(activity).getArticleDao();
+		List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao, activity);
+
+		//		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+		//				LinearLayout.LayoutParams.FILL_PARENT, 
+		//				LinearLayout.LayoutParams.FILL_PARENT);
+		ArticleListBuilder builder = new ArticleListBuilder();
+		wrapper.addView(builder.build(activity, activity.getLayoutInflater(), wrapper, data, cate));
+
+		// store data and builder
+		ForBossViewPagerFragmentActivity.cateBuilderMapping.put(cate, builder);
+		ForBossViewPagerFragmentActivity.cateDataMapping.put(cate, data);
+
+		// set the category title
+		TextView categoryText = (TextView) wrapper.findViewById(R.id.categoryText);
+		categoryText.setText( ForBossUtils.getConfig(cate) );
+
+		return builder;
+	}
+
+	public static void initTabHeader(Activity activity) {
+		View tabHeaderWrapper = activity.findViewById(R.id.tabHeaderWrapper);
+		ImageButton articleButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.contentButton);
+		articleButton.setTag(activity);
+		articleButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Activity activity = (Activity) v.getTag();
+				if (activity instanceof ForBossViewPagerFragmentActivity) {
+					// do nothing
+				} else {
+					TracableActivity.finishAll();
+				}
+			}
+		});
+		ImageButton eventButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.eventButton);
+		eventButton.setTag(activity);
+		eventButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Activity activity = (Activity) v.getTag();
+				if (activity instanceof ForBossViewPagerFragmentActivity) {
+					ForBossViewPagerFragmentActivity.getInstance().navigateToEventList();
+				} else if (activity instanceof EventListActivity) {
+					// do nothing
+				} else {
+					TracableActivity.finishAll();
+					ForBossViewPagerFragmentActivity.getInstance().navigateToEventList();
+				}
+			}
+		});
+		ImageButton c360Button = (ImageButton) tabHeaderWrapper.findViewById(R.id.c360Button);
+		c360Button.setTag(activity);
+		c360Button.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Activity activity = (Activity) v.getTag();
+				if (activity instanceof ForBossViewPagerFragmentActivity) {
+					ForBossViewPagerFragmentActivity.getInstance().navigateToC360List();
+				} else if (activity instanceof C360ListActivity) {
+					// do nothing
+				} else {
+					TracableActivity.finishAll();
+					ForBossViewPagerFragmentActivity.getInstance().navigateToC360List();
+				}
+			}
+		});
+		ImageButton productListButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.productListButton);
+		productListButton.setTag(activity);
+		productListButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Activity activity = (Activity) v.getTag();
+				if (activity instanceof ForBossViewPagerFragmentActivity) {
+					ForBossViewPagerFragmentActivity.getInstance().navigateToProductList();
+				} else if (activity instanceof ProductListActivity) {
+					// do nothing
+				} else {
+					TracableActivity.finishAll();
+					ForBossViewPagerFragmentActivity.getInstance().navigateToProductList();
+				}
+			}
+		});
+		//		articleButton.performClick();
 	}
 }

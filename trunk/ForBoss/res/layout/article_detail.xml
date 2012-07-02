@@ -42,9 +42,11 @@
             android:layout_height="wrap_content"
             android:gravity="right" >
 
-            <ImageView
+            <ImageButton
+                android:id="@+id/likeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#00000000"
                 android:src="@drawable/icon_heart" />
 
             <TextView

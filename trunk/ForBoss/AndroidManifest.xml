@@ -33,6 +33,22 @@
             android:name=".EventDetailActivity"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".C360ListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".EventListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".ProductListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".FavArticleListActivity"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <service android:name=".api.ArticleService" >
         </service>

@@ -183,7 +183,7 @@ public class ArticleService extends IntentService {
 					doSync();
 				}
 			} catch (Exception e) {
-				ForBossUtils.alert(this, "Xảy ra lỗi trong quá trình lấy dữ liệu từ server");
+//				ForBossUtils.alert(this, "Xảy ra lỗi trong quá trình lấy dữ liệu từ server");
 				Log.e(this.getClass().getName(), "Problem with sync");
 				e.printStackTrace();
 			}
