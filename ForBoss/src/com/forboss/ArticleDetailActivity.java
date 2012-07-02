@@ -107,9 +107,8 @@ public class ArticleDetailActivity extends Activity {
 		TextView categoryText = (TextView) findViewById(R.id.categoryText);
 		categoryText.setText(ForBossUtils.getConfig(article.getCategory()));
 
-		// init bottom menu
-		View bottomMenuWrapper = findViewById(R.id.bottomMenuWrapper);
-		ImageButton likeButton = (ImageButton) bottomMenuWrapper.findViewById(R.id.likeButton);
+		// init like button
+		ImageButton likeButton = (ImageButton) findViewById(R.id.likeButton);
 		likeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -125,7 +124,27 @@ public class ArticleDetailActivity extends Activity {
 
 					// send like to server
 					ForBossUtils.get(URL.LIKE_ARTICLE_URL + "/" + article.getId(), null);
+				} else {
+					article.setLike(false);
+					article.setLikes(article.getLikes() - 1);
+					try {
+						articleDao.update(article);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					setLikeText();
 				}
+			}
+		});
+		
+		// init bottom menu
+		View bottomMenuWrapper = findViewById(R.id.bottomMenuWrapper);
+		ImageButton favArticleListButton = (ImageButton) bottomMenuWrapper.findViewById(R.id.favArticleListButton);
+		favArticleListButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				((Activity) v.getContext()).finish();
+				ForBossViewPagerFragmentActivity.getInstance().navigateToFavArticleList();
 			}
 		});
 		ImageButton facebookButton =  (ImageButton) bottomMenuWrapper.findViewById(R.id.facebookButton);
@@ -170,7 +189,15 @@ public class ArticleDetailActivity extends Activity {
 
 	private void setLikeText() {
 		TextView nLikeText = (TextView) findViewById(R.id.nLikeText);
-		nLikeText.setText(Integer.toString(article.getLikes()) + " người thích bài viết");
+		if (article.isLike()) {
+			if (article.getLikes() == 1) { // only you like the article
+				nLikeText.setText("Bạn thích bài viết");
+			} else if (article.getLikes() > 1) { // you and someone like the article
+				nLikeText.setText("Bạn và " + (article.getLikes()-1) + " người khác thích bài viết");
+			}
+		} else {
+			nLikeText.setText(article.getLikes() + " người thích bài viết");
+		}
 	}
 
 	private void setArticleContent() {

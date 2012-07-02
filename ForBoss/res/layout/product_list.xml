@@ -1,187 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/productListWrapper"
+    android:id="@+id/mainWrapper"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#000000"
-    android:gravity="center_horizontal"
     android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo" />
+    <include layout="@layout/tab_header" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:text="@string/slogan"
-        android:textAppearance="@style/general_text_style_small" />
-
-    <!--
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="13" >
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:adjustViewBounds="true"
-            android:background="@drawable/golden_box"
-            android:scaleType="fitXY"
-            android:src="@drawable/product01" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:adjustViewBounds="true"
-            android:background="@drawable/golden_box"
-            android:scaleType="fitXY"
-            android:src="@drawable/product02" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:adjustViewBounds="true"
-            android:background="@drawable/golden_box"
-            android:scaleType="fitXY"
-            android:src="@drawable/product03" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/right_arrow" />
-    </LinearLayout>
-    -->
-
-    <HorizontalScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:scrollbarStyle="outsideOverlay" >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product01" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product02" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product03" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product04" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product05" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product06" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product07" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product08" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product08" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product10" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product11" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:background="@drawable/golden_box"
-                android:scaleType="fitXY"
-                android:src="@drawable/product12" />
-        </LinearLayout>
-    </HorizontalScrollView>
+    <include layout="@layout/header_line" />
 
     <LinearLayout
+        android:id="@+id/productListWrapper"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right"
+        android:layout_height="fill_parent"
+        android:background="#000000"
+        android:gravity="center_horizontal"
         android:orientation="vertical" >
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/but_hide" />
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:text="@string/slogan"
+            android:textAppearance="@style/general_text_style_small" />
+
+        <HorizontalScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:scrollbarStyle="outsideOverlay" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product01" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product02" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product03" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product04" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product05" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product06" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product07" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product08" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product08" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product10" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product11" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/golden_box"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/product12" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/but_hide" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/bottom_line" />
     </LinearLayout>
 
 </LinearLayout>

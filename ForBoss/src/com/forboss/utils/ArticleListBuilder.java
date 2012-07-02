@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ import com.forboss.data.model.Article;
 public class ArticleListBuilder {
 	private Context context;
 	private LayoutInflater inflater;
+	private String category;
 
 	private View root;
 	private PullToRefreshListView ptrArticleList;
@@ -39,12 +41,13 @@ public class ArticleListBuilder {
 
 	private Handler refreshHandler;
 
-	public View build(Context context, LayoutInflater inflater, ViewGroup container, List<Article> data) {
+	public View build(Context context, LayoutInflater inflater, ViewGroup container, List<Article> data, String category) {
 		this.context = context;
 		this.inflater = inflater;
 		this.ptrArticleListData = data;
+		this.category = category;
 
-		this.root = inflater.inflate(R.layout.article_list, container, false);
+		this.root = inflater.inflate(R.layout.ptr_article_list, container, false);
 		ptrArticleList = (PullToRefreshListView) root.findViewById(R.id.article_ptr);
 		ptrArticleList.setLockScrollWhileRefreshing(true);
 		ptrArticleList.setOnRefreshListener(new OnRefreshListener() {
@@ -62,7 +65,7 @@ public class ArticleListBuilder {
 		});
 		ptrArticleListAdapter = new ArticleAdapter(context, ptrArticleListData);
 		ptrArticleList.setAdapter(ptrArticleListAdapter);
-		if (data != null && data.size() > 0 && data.get(0).getCategory().equals(ForBossUtils.getEventCategory())) {
+		if (ForBossUtils.isSpecialCategory(this.category)) {
 			((MarginLayoutParams) ptrArticleList.getLayoutParams()).setMargins(0, 0, 0, 0);
 		}
 
@@ -97,6 +100,9 @@ public class ArticleListBuilder {
 		}
 	}
 
+	private boolean isFavArticleList() {
+		return this.category == null;
+	}
 
 	public class ArticleAdapter extends ArrayAdapter<Article> {
 		private List<Article> data;
@@ -112,112 +118,138 @@ public class ArticleListBuilder {
 			if (convertView != null) {
 				view = convertView;
 			} else {
-				if (article.getCategory().equals(ForBossUtils.getEventCategory()) 
-						|| article.getCategory().equals(ForBossUtils.getC360Category())) {
+				if (isFavArticleList()) {
 					view = inflater.inflate(R.layout.event_item, null);
 				} else {
-					view = inflater.inflate(R.layout.article_item, null);
+					if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+						view = inflater.inflate(R.layout.event_item, null);
+					} else {
+						view = inflater.inflate(R.layout.article_item, null);
+					}
 				}
-
 			}
 
 			view.setTag(article);
 
 			// EVENT || 360
-			if (article.getCategory().equals(ForBossUtils.getEventCategory())
-					|| article.getCategory().equals(ForBossUtils.getC360Category())) {
-				// set thumbnail
-				if (article.getPictureLocation() != null) {
-					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
-					ForBossUtils.recycleBitmapOfImage(thumbnailImage, "event");
-					try {
-						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
-						thumbnailImage.setImageBitmap(bm);
-						thumbnailImage.setTag(bm);
-					} catch (FileNotFoundException e) {
-						Log.e(this.getClass().getName(), e.getMessage());
-						e.printStackTrace();
-					}
-				}
+			if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+				buildSpecialArticleView(view, article, 
+						ForBossUtils.getEventCategory().equals(article.getCategory()),//showTimeAndPlace 
+						ForBossUtils.getC360Category().equals(article.getCategory())//showBody
+						//!isFavArticleList(),//showDetailButton
+						//isFavArticleList()//showRemoveFavButton
+						);
 
-				// set title
-				TextView titleText = (TextView) view.findViewById(R.id.titleText);
-				titleText.setText(article.getTitle());
-
-				// EVENT
-				if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
-					// set place
-					TextView placeText = (TextView) view.findViewById(R.id.placeText);
-					placeText.setVisibility(View.VISIBLE);
-					placeText.setText("@ " + article.getEventPlace());
-
-					// set time
-					TextView timeText = (TextView) view.findViewById(R.id.timeText);
-					timeText.setVisibility(View.VISIBLE);
-					timeText.setText(article.getEventTime());
-				}
-
-				// 360
-				if (article.getCategory().equals(ForBossUtils.getC360Category())) {
-					// set body
-					TextView bodyText = (TextView) view.findViewById(R.id.bodyText);
-					bodyText.setVisibility(View.VISIBLE);
-					bodyText.setText(article.getBody());
-				}
-
-				// set detail button
-				view.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Article article = (Article) v.getTag();
-						ForBossUtils.putBundleData("article", article);
-						Intent intent = new Intent(context, ArticleDetailActivity.class);
-						context.startActivity(intent);
-					}
-				});
 				// POST
 			} else {
-				// set thumbnail
-				if (article.getPictureLocation() != null) {
-					ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
-					ForBossUtils.recycleBitmapOfImage(thumbnailImage, "post");
-					try {
-						Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
-						int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
-						int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
-						int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
-						thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
-								thumbnailImageWidth + 2 * twoDpInPx, 
-								thumbnailImageHeight + 2 * twoDpInPx));
-						thumbnailImage.setImageBitmap(bm);
-						thumbnailImage.setTag(bm);
-					} catch (FileNotFoundException e) {
-						Log.e(this.getClass().getName(), e.getMessage());
-						e.printStackTrace();
-					}
+				if (isFavArticleList()) {
+					buildSpecialArticleView(view, article, 
+							false,//showTimeAndPlace 
+							true//showBody
+							//false,//showDetailButton 
+							//true//showRemoveFavButton
+							);
+				} else {
+					buildePostArticleView(view, article);
 				}
-
-				// set title
-				TextView title = (TextView) view.findViewById(R.id.title);
-				title.setText(article.getTitle());
-
-				// set time
-				TextView time = (TextView) view.findViewById(R.id.time);
-				time.setText(ForBossUtils.getLastUpdateInfo(article.getCreatedTimeInDate()));
-
-				// set "view detail" action
-				view.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Article article = (Article) v.getTag();
-						ForBossUtils.putBundleData("article", article);
-						Intent intent = new Intent(context, ArticleDetailActivity.class);
-						context.startActivity(intent);
-					}
-				});
 			}
 
 			return view;
+		}
+
+		private void buildSpecialArticleView(View view, Article article, boolean showTimeAndPlace, boolean showBody 
+				/*boolean showDetailButton, boolean showRemoveFavButton*/) {
+			// set thumbnail
+			if (article.getPictureLocation() != null) {
+				ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+				ForBossUtils.recycleBitmapOfImage(thumbnailImage, "event");
+				try {
+					Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
+					thumbnailImage.setImageBitmap(bm);
+					thumbnailImage.setTag(bm);
+				} catch (FileNotFoundException e) {
+					Log.e(this.getClass().getName(), e.getMessage());
+					e.printStackTrace();
+				}
+			}
+
+			// set title
+			TextView titleText = (TextView) view.findViewById(R.id.titleText);
+			titleText.setText(article.getTitle());
+
+			if (showTimeAndPlace) {
+				// set place
+				TextView placeText = (TextView) view.findViewById(R.id.placeText);
+				placeText.setVisibility(View.VISIBLE);
+				placeText.setText("@ " + article.getEventPlace());
+
+				// set time
+				TextView timeText = (TextView) view.findViewById(R.id.timeText);
+				timeText.setVisibility(View.VISIBLE);
+				timeText.setText(article.getEventTime());
+			}
+
+			if (showBody) {
+				// set body
+				TextView bodyText = (TextView) view.findViewById(R.id.bodyText);
+				bodyText.setVisibility(View.VISIBLE);
+				bodyText.setText(article.getBody());
+			}
+
+			// set functional button
+//			ImageButton funtionalButton = (ImageButton) view.findViewById(R.id.funtionalButton);
+//			funtionalButton.setTag(article);
+//			if (showDetailButton) {
+//				funtionalButton.setImageResource(R.drawable.right_arrow);
+//			} else if (showRemoveFavButton) {
+//				funtionalButton.setImageResource(R.drawable.but_delete);
+//			}
+
+			setOnClickListener(view);
+		}
+
+		private void buildePostArticleView(View view, Article article) {
+			// set thumbnail
+			if (article.getPictureLocation() != null) {
+				ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
+				ForBossUtils.recycleBitmapOfImage(thumbnailImage, "post");
+				try {
+					Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
+					int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
+					int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
+					int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
+					thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
+							thumbnailImageWidth + 2 * twoDpInPx, 
+							thumbnailImageHeight + 2 * twoDpInPx));
+					thumbnailImage.setImageBitmap(bm);
+					thumbnailImage.setTag(bm);
+				} catch (FileNotFoundException e) {
+					Log.e(this.getClass().getName(), e.getMessage());
+					e.printStackTrace();
+				}
+			}
+
+			// set title
+			TextView title = (TextView) view.findViewById(R.id.title);
+			title.setText(article.getTitle());
+
+			// set time
+			TextView time = (TextView) view.findViewById(R.id.time);
+			time.setText(ForBossUtils.getLastUpdateInfo(article.getCreatedTimeInDate()));
+
+			setOnClickListener(view);
+		}
+
+		private void setOnClickListener(View view) {
+			view.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Article article = (Article) v.getTag();
+					ForBossUtils.putBundleData("article", article);
+					Intent intent = new Intent(context, ArticleDetailActivity.class);
+					context.startActivity(intent);
+				}
+			});
 		}
 	}
 
