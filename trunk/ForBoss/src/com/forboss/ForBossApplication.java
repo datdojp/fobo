@@ -28,6 +28,12 @@ public class ForBossApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		// Call comScore tracking
+		com.comscore.analytics.Census.getInstance().notifyStart(
+				getApplicationContext(),
+				"9627158",
+				"e2bff4380e50059358db2a18c2911f60");
 
 		// Create the Facebook Object using the app id.
 		Utility.mFacebook = new Facebook(APP_ID);
