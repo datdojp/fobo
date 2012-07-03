@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;

@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -48,6 +49,14 @@ public class ArticleDetailActivity extends Activity {
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
+		}
+		
+		// Hide Time, Title, Thumbnail if this article is event
+		if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+			findViewById(R.id.imageClock).setVisibility(View.GONE);
+			findViewById(R.id.time).setVisibility(View.GONE);
+			findViewById(R.id.titleText).setVisibility(View.GONE);
+			findViewById(R.id.thumbnailImage).setVisibility(View.GONE);
 		}
 
 		// load article body if HTML content is not loaded yet
@@ -201,26 +210,25 @@ public class ArticleDetailActivity extends Activity {
 	}
 
 	private void setArticleContent() {
-		WebView htmlContent = (WebView) findViewById(R.id.htmlContent);
-		htmlContent.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-		htmlContent.getSettings().setLoadWithOverviewMode(true);
-		htmlContent.getSettings().setUseWideViewPort(true);
-		htmlContent.getSettings().setDefaultFontSize(32);
-		htmlContent.loadData(
-
-				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
-						"<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
-						"<head>" +
-						"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" +
-						"</head>" +
-						"<body style='background-color:black; color: white;'>" + 
-						article.getHtmlContent() + 
-						"</body>" +
-						"</html>", 
-
-						"text/html", "UTF-8");
-	}
-
+		  WebView htmlContent = (WebView) findViewById(R.id.htmlContent);
+		  htmlContent.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+		  htmlContent.getSettings().setLoadWithOverviewMode(true);
+		  htmlContent.getSettings().setUseWideViewPort(true);
+		  htmlContent.getSettings().setDefaultFontSize(32);
+		  htmlContent.getSettings().setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
+		  htmlContent.loadDataWithBaseURL(null, 
+		    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
+		    "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
+		    "<head>" +
+		    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" +
+		    "</head>" +
+		    "<body style='background-color:black; color: white;'>" + 
+		    article.getHtmlContent() + 
+		    "</body>" +
+		    "</html>", 
+		    
+		    "text/html", "utf-8", null);
+		 }
 	
 	
 	@Override

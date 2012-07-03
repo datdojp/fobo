@@ -23,7 +23,7 @@
         <ImageButton
             android:id="@+id/contentButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="#00000000"
@@ -34,7 +34,7 @@
         <ImageButton
             android:id="@+id/eventButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="#00000000"
@@ -45,7 +45,7 @@
         <ImageButton
             android:id="@+id/c360Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="#00000000"

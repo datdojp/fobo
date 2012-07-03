@@ -4,35 +4,56 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/bg_login"
-    android:gravity="center"
-    android:orientation="vertical" >
+    android:gravity="fill_vertical|center"
+    android:orientation="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="false"
+    android:scrollbarStyle="insideOverlay" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="477dp"
+        android:layout_gravity="center_vertical|center"
+        android:layout_weight="0.45"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="50dp"
+            android:text="Hãy điền email để kích hoạt ứng dụng"
+            android:textAppearance="@style/general_text_style" />
+
+        <EditText
+            android:id="@+id/userEmailEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/input"
+            android:ems="10"
+            android:hint="hãy nhập email của bạn"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:singleLine="true"
+            android:textAppearance="@style/general_input_style" />
+
+        <ImageButton
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#00000000"
+            android:src="@drawable/but_login" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="50dp"
-        android:text="Hãy điền email để kích hoạt ứng dụng"
-        android:textAppearance="@style/general_text_style" />
-
-    <EditText
-        android:id="@+id/userEmailEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/input"
-        android:hint="hãy nhập email của bạn"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:singleLine="true"
-        android:textAppearance="@style/general_input_style" />
-
-    <ImageButton
-        android:id="@+id/submitButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="#00000000"
-        android:src="@drawable/but_login" />
+        android:text="* Mọi thông tin bạn cung cấp sẽ được bảo mật"
+        android:textAppearance="@style/general_text_style_small"
+        android:textSize="12px"
+        android:typeface="normal" />
 
 </LinearLayout>

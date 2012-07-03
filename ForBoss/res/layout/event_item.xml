@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/golden_box"
+    android:background="@drawable/bg_event_item"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="2dp"
@@ -11,10 +11,10 @@
     <ImageView
         android:id="@+id/thumbnailImage"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
         android:src="@drawable/loading_image" />
 
     <LinearLayout
