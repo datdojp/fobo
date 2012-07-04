@@ -50,7 +50,8 @@ public class ArticleListBuilder {
 
 		this.root = inflater.inflate(R.layout.ptr_article_list, container, false);
 		ptrArticleList = (PullToRefreshListView) root.findViewById(R.id.article_ptr);
-		ptrArticleList.setLockScrollWhileRefreshing(true);
+		// Disable according to request
+		//ptrArticleList.setLockScrollWhileRefreshing(true);
 		ptrArticleList.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
