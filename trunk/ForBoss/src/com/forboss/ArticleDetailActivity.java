@@ -7,7 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,14 +27,18 @@ import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.sns.facebook.BaseDialogListener;
 import com.forboss.sns.facebook.Utility;
+import com.forboss.sns.linkedin.LinkedIn;
 import com.forboss.utils.ForBossUtils;
 import com.forboss.utils.URL;
+import com.google.code.linkedinapi.client.oauth.LinkedInAccessToken;
 import com.j256.ormlite.dao.Dao;
 
 public class ArticleDetailActivity extends Activity {
 	private Article article;
 	private Dao<Article, String> articleDao; 
 	private ArticleDetailActivity instance;
+	private static LinkedIn linkedIn = new LinkedIn();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -50,7 +56,7 @@ public class ArticleDetailActivity extends Activity {
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		// Hide Time, Title, Thumbnail if this article is event
 		if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
 			findViewById(R.id.imageClock).setVisibility(View.GONE);
@@ -145,7 +151,7 @@ public class ArticleDetailActivity extends Activity {
 				}
 			}
 		});
-		
+
 		// init bottom menu
 		View bottomMenuWrapper = findViewById(R.id.bottomMenuWrapper);
 		ImageButton favArticleListButton = (ImageButton) bottomMenuWrapper.findViewById(R.id.favArticleListButton);
@@ -188,7 +194,47 @@ public class ArticleDetailActivity extends Activity {
 				});
 			}
 		});
+		ImageButton linkedinButton = (ImageButton) bottomMenuWrapper.findViewById(R.id.linkedinButton);
+		linkedinButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ForBossUtils.alertProgress(instance, "Chờ xử lý...");
+				(new Thread(new Runnable() {
+					@Override
+					public void run() {
+						linkedIn.restore(instance);
+						if (linkedIn.client == null) {
+							linkedIn = new LinkedIn();
+							linkedIn.liToken = linkedIn.oAuthService.getOAuthRequestToken(LinkedIn.OAUTH_CALLBACK_URL);
+							Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(linkedIn.liToken.getAuthorizationUrl()));
+							startActivity(i);
+							ForBossUtils.dismissProgress(instance);
+						} else {
+							postToLinkedIn();
+							ForBossUtils.dismissProgress(instance);
+						}
+						//						Intent intent = new Intent(instance, LinkedIn.class);
+						//						startActivity(intent);
+					}
+				})).start();
+			}
+		});
+	}
 
+	@Override
+	protected void onNewIntent(Intent intent) {
+		String verifier = intent.getData().getQueryParameter("oauth_verifier");
+
+		linkedIn.accessToken = linkedIn.oAuthService.getOAuthAccessToken(
+				linkedIn.liToken, verifier);
+		linkedIn.save(instance);
+		Log.d(this.getClass().getName(), "Token=" + linkedIn.accessToken.getToken() + ", Token Secret=" + linkedIn.accessToken.getTokenSecret());
+		linkedIn.client = linkedIn.factory.createLinkedInApiClient(linkedIn.accessToken);
+		postToLinkedIn();
+	}
+
+	private void postToLinkedIn() {
+		linkedIn.client.postNetworkUpdate(article.getTitle());
 	}
 
 	private void setViewText() {
@@ -210,27 +256,27 @@ public class ArticleDetailActivity extends Activity {
 	}
 
 	private void setArticleContent() {
-		  WebView htmlContent = (WebView) findViewById(R.id.htmlContent);
-		  htmlContent.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-		  htmlContent.getSettings().setLoadWithOverviewMode(true);
-		  htmlContent.getSettings().setUseWideViewPort(true);
-		  htmlContent.getSettings().setDefaultFontSize(32);
-		  htmlContent.getSettings().setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
-		  htmlContent.loadDataWithBaseURL(null, 
-		    "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
-		    "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
-		    "<head>" +
-		    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" +
-		    "</head>" +
-		    "<body style='background-color:black; color: white;'>" + 
-		    article.getHtmlContent() + 
-		    "</body>" +
-		    "</html>", 
-		    
-		    "text/html", "utf-8", null);
-		 }
-	
-	
+		WebView htmlContent = (WebView) findViewById(R.id.htmlContent);
+		htmlContent.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+		htmlContent.getSettings().setLoadWithOverviewMode(true);
+		htmlContent.getSettings().setUseWideViewPort(true);
+		htmlContent.getSettings().setDefaultFontSize(32);
+		htmlContent.getSettings().setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
+		htmlContent.loadDataWithBaseURL(null, 
+				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">" +
+						"<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
+						"<head>" +
+						"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />" +
+						"</head>" +
+						"<body style='background-color:black; color: white;'>" + 
+						article.getHtmlContent() + 
+						"</body>" +
+						"</html>", 
+
+						"text/html", "utf-8", null);
+	}
+
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
