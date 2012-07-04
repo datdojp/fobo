@@ -537,7 +537,7 @@ public class ForBossUtils {
 		long timeDiff = now.getTime() - lastUpdate.getTime();
 		long deltaSecond = timeDiff / 1000;
 		if (deltaSecond < 5) {
-			return "Mới tức thi";
+			return "Mới tức thì";
 		}
 		if (deltaSecond < 60) {
 			return deltaSecond + " giây trước";
