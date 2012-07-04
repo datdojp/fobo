@@ -27,7 +27,18 @@
         </activity>
         <activity
             android:name=".ArticleDetailActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="litestcalback"
+                    android:scheme="x-oauthflow-linkedin" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".EventDetailActivity"
@@ -49,6 +60,7 @@
             android:name=".FavArticleListActivity"
             android:screenOrientation="portrait" >
         </activity>
+        
 
         <service android:name=".api.ArticleService" >
         </service>

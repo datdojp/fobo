@@ -217,14 +217,16 @@ public class ArticleListBuilder {
 				ForBossUtils.recycleBitmapOfImage(thumbnailImage, "post");
 				try {
 					Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
-					int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
-					int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
-					int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
-					thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
-							thumbnailImageWidth + 2 * twoDpInPx, 
-							thumbnailImageHeight + 2 * twoDpInPx));
-					thumbnailImage.setImageBitmap(bm);
-					thumbnailImage.setTag(bm);
+					if (bm != null) {
+						int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
+						int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
+						int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
+						thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
+								thumbnailImageWidth + 2 * twoDpInPx, 
+								thumbnailImageHeight + 2 * twoDpInPx));
+						thumbnailImage.setImageBitmap(bm);
+						thumbnailImage.setTag(bm);
+					}
 				} catch (FileNotFoundException e) {
 					Log.e(this.getClass().getName(), e.getMessage());
 					e.printStackTrace();
