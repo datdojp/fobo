@@ -62,17 +62,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.forboss.C360ListActivity;
-import com.forboss.EventListActivity;
+import com.forboss.C360Activity;
+import com.forboss.EventActivity;
 import com.forboss.ForBossApplication;
 import com.forboss.ForBossViewPagerFragmentActivity;
+import com.forboss.MainActivity;
+import com.forboss.PostActivity;
 import com.forboss.ProductListActivity;
 import com.forboss.R;
 import com.forboss.TracableActivity;
 import com.forboss.data.model.Article;
-import com.forboss.data.utils.DatabaseHelper;
 import com.j256.ormlite.dao.Dao;
 
 public class ForBossUtils {
@@ -410,49 +410,83 @@ public class ForBossUtils {
 		return splitted;
 	}
 
-	private static List<String> articleCategoryList;
-	public static List<String> getArticleCategoryList() {
-		if (articleCategoryList == null) {
-			articleCategoryList = new ArrayList<String>();
-			String categoryConfig = getConfig("categories");
-			String[] splitted = categoryConfig.trim().split(",");
-			for(int i = 0; i < splitted.length; i++) {
-				articleCategoryList.add(splitted[i].trim());
+	public static final String GROUP_POST = "post";
+	public static final String GROUP_EVENT = "event";
+	public static final String GROUP_C360 = "c360";
+	
+	public static List<String> getAllCategories() {
+		List<String> results = new ArrayList<String>();
+		results.addAll(getCategoriesOfGroup(GROUP_POST));
+		results.addAll(getCategoriesOfGroup(GROUP_EVENT));
+		results.addAll(getCategoriesOfGroup(GROUP_C360));
+		return results;
+	}
+	
+	public static boolean belongsToGroup(String cate, String group) {
+		for(String aCate : getCategoriesOfGroup(group)) {
+			if (aCate.equals(cate)) {
+				return true;
 			}
 		}
-
-		return articleCategoryList;
+		return false;
 	}
-	private static List<String> categoryList;
-	public static List<String> getCategoryList() {
-		if (categoryList == null) {
-			categoryList = new ArrayList<String>();
-			categoryList.addAll(getArticleCategoryList());
-			categoryList.add(getEventCategory());
-			categoryList.add(getC360Category());
+	
+	private static Map<String, List<String>> groupCategoriesMap = new HashMap<String, List<String>>();
+	public static List<String> getCategoriesOfGroup(String group) {
+		if (groupCategoriesMap.get(group) == null) {
+			List<String> categories = new ArrayList<String>();
+			String groupConfig = getConfig(group);
+			String[] splitted = groupConfig.trim().split(",");
+			for(int i = 0; i < splitted.length; i++) {
+				categories.add(splitted[i].trim());
+			}
+			groupCategoriesMap.put(group, categories);
 		}
-		return categoryList;
+		return groupCategoriesMap.get(group);
 	}
+//	private static List<String> articleCategoryList;
+//	public static List<String> getArticleCategoryList() {
+//		if (articleCategoryList == null) {
+//			articleCategoryList = new ArrayList<String>();
+//			String categoryConfig = getConfig("categories");
+//			String[] splitted = categoryConfig.trim().split(",");
+//			for(int i = 0; i < splitted.length; i++) {
+//				articleCategoryList.add(splitted[i].trim());
+//			}
+//		}
+//
+//		return articleCategoryList;
+//	}
+//	private static List<String> categoryList;
+//	public static List<String> getCategoryList() {
+//		if (categoryList == null) {
+//			categoryList = new ArrayList<String>();
+//			categoryList.addAll(getArticleCategoryList());
+//			categoryList.add(getEventCategory());
+//			categoryList.add(getC360Category());
+//		}
+//		return categoryList;
+//	}
+//
+//	private static String c360Category;
+//	public static String getC360Category() {
+//		if (c360Category == null) {
+//			c360Category = getConfig("c360");
+//		}
+//		return c360Category;
+//	}
 
-	private static String c360Category;
-	public static String getC360Category() {
-		if (c360Category == null) {
-			c360Category = getConfig("c360");
-		}
-		return c360Category;
-	}
-
-	public static boolean isSpecialCategory(String category) {
-		return getEventCategory().equals(category) || getC360Category().equals(category);
-	}
-
-	private static String eventCategory;
-	public static String getEventCategory() {
-		if (eventCategory == null) {
-			eventCategory = getConfig("event");
-		}
-		return eventCategory;
-	}
+//	public static boolean isSpecialCategory(String category) {
+//		return getEventCategory().equals(category) || getC360Category().equals(category);
+//	}
+//
+//	private static String eventCategory;
+//	public static String getEventCategory() {
+//		if (eventCategory == null) {
+//			eventCategory = getConfig("event");
+//		}
+//		return eventCategory;
+//	}
 
 	public static void get(String url, Handler taskFinishedHandler) {
 		if (!isNetworkAvailable()) {
@@ -630,39 +664,104 @@ public class ForBossUtils {
 		}
 	}
 
-	public static ArticleListBuilder initSpecialArticleList(Activity activity, String cate, ViewGroup wrapper) throws SQLException {
-		Dao<Article, String> articleDao = DatabaseHelper.getHelper(activity).getArticleDao();
-		List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao, activity);
+//	public static ArticleListBuilder initSpecialArticleList(Activity activity, String cate, ViewGroup wrapper) throws SQLException {
+//		Dao<Article, String> articleDao = DatabaseHelper.getHelper(activity).getArticleDao();
+//		List<Article> data = ForBossUtils.getArticleOfCategoryFromDb(cate, articleDao, activity);
+//
+//		ArticleListBuilder builder = new ArticleListBuilder();
+//		wrapper.addView(builder.build(activity, activity.getLayoutInflater(), wrapper, data, cate));
+//
+//		// store data and builder
+//		MainActivity.cateBuilderMapping.put(cate, builder);
+//		MainActivity.cateDataMapping.put(cate, data);
+//
+//		// set the category title
+//		TextView categoryText = (TextView) wrapper.findViewById(R.id.categoryText);
+//		categoryText.setText( ForBossUtils.getConfig(cate) );
+//
+//		return builder;
+//	}
 
-		//		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-		//				LinearLayout.LayoutParams.FILL_PARENT, 
-		//				LinearLayout.LayoutParams.FILL_PARENT);
-		ArticleListBuilder builder = new ArticleListBuilder();
-		wrapper.addView(builder.build(activity, activity.getLayoutInflater(), wrapper, data, cate));
-
-		// store data and builder
-		ForBossViewPagerFragmentActivity.cateBuilderMapping.put(cate, builder);
-		ForBossViewPagerFragmentActivity.cateDataMapping.put(cate, data);
-
-		// set the category title
-		TextView categoryText = (TextView) wrapper.findViewById(R.id.categoryText);
-		categoryText.setText( ForBossUtils.getConfig(cate) );
-
-		return builder;
-	}
-
+//	public static void initTabHeader(Activity activity) {
+//		View tabHeaderWrapper = activity.findViewById(R.id.tabHeaderWrapper);
+//		ImageButton articleButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.contentButton);
+//		articleButton.setTag(activity);
+//		articleButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				Activity activity = (Activity) v.getTag();
+//				if (activity instanceof ForBossViewPagerFragmentActivity) {
+//					// do nothing
+//				} else {
+//					TracableActivity.finishAll();
+//				}
+//			}
+//		});
+//		ImageButton eventButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.eventButton);
+//		eventButton.setTag(activity);
+//		eventButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				Activity activity = (Activity) v.getTag();
+//				if (activity instanceof ForBossViewPagerFragmentActivity) {
+//					ForBossViewPagerFragmentActivity.getInstance().navigateToEventList();
+//				} else if (activity instanceof EventListActivity) {
+//					// do nothing
+//				} else {
+//					TracableActivity.finishAll();
+//					ForBossViewPagerFragmentActivity.getInstance().navigateToEventList();
+//				}
+//			}
+//		});
+//		ImageButton c360Button = (ImageButton) tabHeaderWrapper.findViewById(R.id.c360Button);
+//		c360Button.setTag(activity);
+//		c360Button.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				Activity activity = (Activity) v.getTag();
+//				if (activity instanceof ForBossViewPagerFragmentActivity) {
+//					ForBossViewPagerFragmentActivity.getInstance().navigateToC360List();
+//				} else if (activity instanceof C360ListActivity) {
+//					// do nothing
+//				} else {
+//					TracableActivity.finishAll();
+//					ForBossViewPagerFragmentActivity.getInstance().navigateToC360List();
+//				}
+//			}
+//		});
+//		ImageButton productListButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.productListButton);
+//		productListButton.setTag(activity);
+//		productListButton.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				Activity activity = (Activity) v.getTag();
+//				if (activity instanceof ForBossViewPagerFragmentActivity) {
+//					ForBossViewPagerFragmentActivity.getInstance().navigateToProductList();
+//				} else if (activity instanceof ProductListActivity) {
+//					// do nothing
+//				} else {
+//					TracableActivity.finishAll();
+//					ForBossViewPagerFragmentActivity.getInstance().navigateToProductList();
+//				}
+//			}
+//		});
+//		//		articleButton.performClick();
+//	}
+	
 	public static void initTabHeader(Activity activity) {
 		View tabHeaderWrapper = activity.findViewById(R.id.tabHeaderWrapper);
-		ImageButton articleButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.contentButton);
-		articleButton.setTag(activity);
-		articleButton.setOnClickListener(new View.OnClickListener() {
+		ImageButton postButton = (ImageButton) tabHeaderWrapper.findViewById(R.id.postButton);
+		postButton.setTag(activity);
+		postButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Activity activity = (Activity) v.getTag();
-				if (activity instanceof ForBossViewPagerFragmentActivity) {
+				if (activity instanceof PostActivity) {
 					// do nothing
 				} else {
 					TracableActivity.finishAll();
+					ForBossViewPagerFragmentActivity.finishAll();
+					MainActivity.getInstance().navigateToPost();
 				}
 			}
 		});
@@ -672,13 +771,12 @@ public class ForBossUtils {
 			@Override
 			public void onClick(View v) {
 				Activity activity = (Activity) v.getTag();
-				if (activity instanceof ForBossViewPagerFragmentActivity) {
-					ForBossViewPagerFragmentActivity.getInstance().navigateToEventList();
-				} else if (activity instanceof EventListActivity) {
+				if (activity instanceof EventActivity) {
 					// do nothing
 				} else {
 					TracableActivity.finishAll();
-					ForBossViewPagerFragmentActivity.getInstance().navigateToEventList();
+					ForBossViewPagerFragmentActivity.finishAll();
+					MainActivity.getInstance().navigateToEvent();
 				}
 			}
 		});
@@ -688,13 +786,12 @@ public class ForBossUtils {
 			@Override
 			public void onClick(View v) {
 				Activity activity = (Activity) v.getTag();
-				if (activity instanceof ForBossViewPagerFragmentActivity) {
-					ForBossViewPagerFragmentActivity.getInstance().navigateToC360List();
-				} else if (activity instanceof C360ListActivity) {
+				if (activity instanceof C360Activity) {
 					// do nothing
 				} else {
 					TracableActivity.finishAll();
-					ForBossViewPagerFragmentActivity.getInstance().navigateToC360List();
+					ForBossViewPagerFragmentActivity.finishAll();
+					MainActivity.getInstance().navigateToC360();
 				}
 			}
 		});
@@ -704,16 +801,14 @@ public class ForBossUtils {
 			@Override
 			public void onClick(View v) {
 				Activity activity = (Activity) v.getTag();
-				if (activity instanceof ForBossViewPagerFragmentActivity) {
-					ForBossViewPagerFragmentActivity.getInstance().navigateToProductList();
-				} else if (activity instanceof ProductListActivity) {
+				if (activity instanceof ProductListActivity) {
 					// do nothing
 				} else {
 					TracableActivity.finishAll();
-					ForBossViewPagerFragmentActivity.getInstance().navigateToProductList();
+					ForBossViewPagerFragmentActivity.finishAll();
+					MainActivity.getInstance().navigateToProduct();
 				}
 			}
 		});
-		//		articleButton.performClick();
 	}
 }
