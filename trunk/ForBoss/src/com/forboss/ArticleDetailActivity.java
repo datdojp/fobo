@@ -33,16 +33,25 @@ import com.forboss.utils.URL;
 import com.google.code.linkedinapi.client.oauth.LinkedInAccessToken;
 import com.j256.ormlite.dao.Dao;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 public class ArticleDetailActivity extends Activity {
 	private Article article;
 	private Dao<Article, String> articleDao; 
 	private ArticleDetailActivity instance;
 	private static LinkedIn linkedIn = new LinkedIn();
+	
+	private GoogleAnalyticsTracker tracker;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.article_detail);
+		
+		// Init Google Analytics
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.startNewSession("UA-3013465-32", this);
+		
 		this.instance = this;
 		// get the data
 		article = (Article) ForBossUtils.getBundleData("article");
@@ -283,6 +292,10 @@ public class ArticleDetailActivity extends Activity {
 		ImageView thumbnailImage = (ImageView) findViewById(R.id.thumbnailImage);
 		if (thumbnailImage != null) {
 			ForBossUtils.recycleBitmapOfImage(thumbnailImage, "article detail");
+		}
+		
+		if (tracker != null) {
+			tracker.stopSession();
 		}
 	}
 }
