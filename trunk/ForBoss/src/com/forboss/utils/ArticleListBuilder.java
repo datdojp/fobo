@@ -68,7 +68,7 @@ public class ArticleListBuilder {
 		//		if (ForBossUtils.isSpecialCategory(this.category)) {
 		if (ForBossUtils.belongsToGroup(this.category, ForBossUtils.GROUP_EVENT) 
 				|| ForBossUtils.belongsToGroup(this.category, ForBossUtils.GROUP_C360)) {
-//			((MarginLayoutParams) ptrArticleList.getLayoutParams()).setMargins(0, 0, 0, 0);
+			//			((MarginLayoutParams) ptrArticleList.getLayoutParams()).setMargins(0, 0, 0, 0);
 			//TODO: deal with this
 		}
 
@@ -137,12 +137,12 @@ public class ArticleListBuilder {
 			view.setTag(article);
 
 			// EVENT || 360
-//			if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+			//			if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
 			if (ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT) 
-							|| ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_C360)) {
+					|| ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_C360)) {
 				buildSpecialArticleView(view, article, 
-//						ForBossUtils.getEventCategory().equals(article.getCategory()),//showTimeAndPlace 
-//						ForBossUtils.getC360Category().equals(article.getCategory())//showBody
+						//						ForBossUtils.getEventCategory().equals(article.getCategory()),//showTimeAndPlace 
+						//						ForBossUtils.getC360Category().equals(article.getCategory())//showBody
 						ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT),//showTimeAndPlace 
 						ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_C360)//showBody
 						//!isFavArticleList(),//showDetailButton
@@ -172,14 +172,9 @@ public class ArticleListBuilder {
 			if (article.getPictureLocation() != null) {
 				ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
 				ForBossUtils.recycleBitmapOfImage(thumbnailImage, "event");
-				try {
-					Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
-					thumbnailImage.setImageBitmap(bm);
-					thumbnailImage.setTag(bm);
-				} catch (FileNotFoundException e) {
-					Log.e(this.getClass().getName(), e.getMessage());
-					e.printStackTrace();
-				}
+				Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
+				thumbnailImage.setImageBitmap(bm);
+				thumbnailImage.setTag(bm);
 			}
 
 			// set title
@@ -222,21 +217,17 @@ public class ArticleListBuilder {
 			if (article.getPictureLocation() != null) {
 				ImageView thumbnailImage = (ImageView) view.findViewById(R.id.thumbnailImage);
 				ForBossUtils.recycleBitmapOfImage(thumbnailImage, "post");
-				try {
-					Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
-					if (bm != null) {
-						int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
-						int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
-						int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
-						thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
-								thumbnailImageWidth + 2 * twoDpInPx, 
-								thumbnailImageHeight + 2 * twoDpInPx));
-						thumbnailImage.setImageBitmap(bm);
-						thumbnailImage.setTag(bm);
-					}
-				} catch (FileNotFoundException e) {
-					Log.e(this.getClass().getName(), e.getMessage());
-					e.printStackTrace();
+
+				Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(article.getPictureLocation(), new ContextWrapper(context));
+				if (bm != null) {
+					int thumbnailImageWidth = ForBossApplication.getWindowDisplay().getWidth();
+					int thumbnailImageHeight =  thumbnailImageWidth * bm.getHeight() / bm.getWidth();
+					int twoDpInPx = ForBossUtils.convertDpToPixel(2, context);
+					thumbnailImage.setLayoutParams(new RelativeLayout.LayoutParams(
+							thumbnailImageWidth + 2 * twoDpInPx, 
+							thumbnailImageHeight + 2 * twoDpInPx));
+					thumbnailImage.setImageBitmap(bm);
+					thumbnailImage.setTag(bm);
 				}
 			}
 

@@ -20,6 +20,7 @@ import com.forboss.adapter.PagerAdapter;
 import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.fragment.ArticleListFragment;
+import com.forboss.utils.ArticleListBuilder;
 import com.forboss.utils.ForBossUtils;
 import com.j256.ormlite.dao.Dao;
 
@@ -160,6 +161,14 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		activityList.remove(this);
+		
+		for(String aCate : categories) {
+			ArticleListBuilder builder = MainActivity.cateBuilderMapping.get(aCate);
+			if (builder != null) {
+				builder.destroy();
+				MainActivity.cateBuilderMapping.put(aCate, null);
+			}
+		}
 	}
 	
 	

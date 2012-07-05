@@ -1,7 +1,8 @@
 package com.forboss;
 
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.widget.ImageButton;
@@ -38,18 +40,19 @@ public class ArticleDetailActivity extends Activity {
 	private Dao<Article, String> articleDao; 
 	private ArticleDetailActivity instance;
 	private static LinkedIn linkedIn = new LinkedIn();
-	
+	private ViewGroup relatedArticles;
+
 	private GoogleAnalyticsTracker tracker;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.article_detail);
-		
+
 		// Init Google Analytics
 		tracker = GoogleAnalyticsTracker.getInstance();
 		tracker.startNewSession("UA-3013465-32", this);
-		
+
 		this.instance = this;
 		// get the data
 		article = (Article) ForBossUtils.getBundleData("article");
@@ -65,7 +68,7 @@ public class ArticleDetailActivity extends Activity {
 		}
 
 		// Hide Time, Title, Thumbnail if this article is event
-//		if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+		//		if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
 		if (ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT)) {
 			findViewById(R.id.imageClock).setVisibility(View.GONE);
 			findViewById(R.id.time).setVisibility(View.GONE);
@@ -108,14 +111,10 @@ public class ArticleDetailActivity extends Activity {
 
 		if (article.getPictureLocation() != null) {
 			ImageView thumbnailImage = (ImageView) findViewById(R.id.thumbnailImage);
-			try {
 				Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(
 						article.getPictureLocation(), this);
 				thumbnailImage.setImageBitmap(bm);
 				thumbnailImage.setTag(bm);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
 		}
 
 		// init the top menu
@@ -132,11 +131,11 @@ public class ArticleDetailActivity extends Activity {
 
 		// init like button
 		ImageButton likeButton = (ImageButton) findViewById(R.id.likeButton);
-		
+
 		if (article.isLike()) {
 			likeButton.setImageResource(R.drawable.icon_heart);
 		}
-		
+
 		likeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -149,7 +148,7 @@ public class ArticleDetailActivity extends Activity {
 						e.printStackTrace();
 					}
 					setLikeText();
-					
+
 					((ImageButton) v).setImageResource(R.drawable.icon_heart);
 
 					// send like to server
@@ -234,6 +233,44 @@ public class ArticleDetailActivity extends Activity {
 				})).start();
 			}
 		});
+
+		// init related articles
+		relatedArticles = (ViewGroup) findViewById(R.id.relatedArticles);
+		int max = ForBossUtils.getMaxRelatedArticles();
+		int count = 0;
+		for (Article other : MainActivity.cateDataMapping.get(article.getCategory())) {
+			if (other != article && other.getPictureLocation() != null) {
+				
+				Bitmap bm = ForBossUtils.loadBitmapFromInternalStorage(other.getPictureLocation(), this);
+				if (bm != null) {
+					ImageView item = (ImageView) this.getLayoutInflater().inflate(R.layout.related_article_item, relatedArticles, false);
+					item.setImageBitmap(bm);
+					item.setTag(bm);
+					
+					Map<String, Object> tag = new HashMap<String, Object>();
+					tag.put("article", other);
+					tag.put("bm", bm);
+					item.setTag(tag);
+					item.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							finish();
+							Article article = (Article) ((Map)v.getTag()).get("article");
+							ForBossUtils.putBundleData("article", article);
+							Intent intent = new Intent(instance, ArticleDetailActivity.class);
+							startActivity(intent);	
+						}
+					});
+					
+					relatedArticles.addView(item);
+
+					count++;
+					if (count >= max) {
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -299,7 +336,13 @@ public class ArticleDetailActivity extends Activity {
 		if (thumbnailImage != null) {
 			ForBossUtils.recycleBitmapOfImage(thumbnailImage, "article detail");
 		}
-		
+		if (relatedArticles != null) {
+			for(int i = 0; i < relatedArticles.getChildCount(); i++) {
+				ImageView item = (ImageView) relatedArticles.getChildAt(i);
+				ForBossUtils.recycleBitmapOfImage(item, "item of related article");
+			}
+		}
+
 		if (tracker != null) {
 			tracker.stopSession();
 		}
