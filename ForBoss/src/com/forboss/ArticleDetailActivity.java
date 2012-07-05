@@ -133,6 +133,11 @@ public class ArticleDetailActivity extends Activity {
 
 		// init like button
 		ImageButton likeButton = (ImageButton) findViewById(R.id.likeButton);
+		
+		if (article.isLike()) {
+			likeButton.setImageResource(R.drawable.icon_heart);
+		}
+		
 		likeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -145,6 +150,8 @@ public class ArticleDetailActivity extends Activity {
 						e.printStackTrace();
 					}
 					setLikeText();
+					
+					((ImageButton) v).setImageResource(R.drawable.icon_heart);
 
 					// send like to server
 					ForBossUtils.get(URL.LIKE_ARTICLE_URL + "/" + article.getId(), null);

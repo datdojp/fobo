@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#00000000"
-                android:src="@drawable/icon_heart" />
+                android:src="@drawable/icon_heart_" />
 
             <TextView
                 android:id="@+id/nLikeText"
