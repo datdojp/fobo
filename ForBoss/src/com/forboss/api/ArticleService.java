@@ -91,6 +91,7 @@ public class ArticleService extends IntentService {
 				articleDao.create(anArticle);
 			} else {
 				Article.copyContent(anArticle, articleFromDb);
+				articleFromDb.setHtmlContent(null);//clear the HTML content so that the updated HTML content can be loaded again
 				articleDao.update(articleFromDb);
 			}
 		}
