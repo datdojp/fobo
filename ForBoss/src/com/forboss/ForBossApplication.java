@@ -13,10 +13,12 @@ import com.forboss.sns.facebook.SessionStore;
 import com.forboss.sns.facebook.Utility;
 import com.forboss.utils.ForBossUtils;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
 public class ForBossApplication extends Application {
 	private static ForBossApplication instance;
 	private static final String APP_ID = "299767643453542";
-
+	
 	public ForBossApplication() {
 		instance = this;
 	}
@@ -34,6 +36,7 @@ public class ForBossApplication extends Application {
 				getApplicationContext(),
 				"9627158",
 				"e2bff4380e50059358db2a18c2911f60");
+				
 
 		// Create the Facebook Object using the app id.
 		Utility.mFacebook = new Facebook(APP_ID);
@@ -47,6 +50,7 @@ public class ForBossApplication extends Application {
 		WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
 		display = wm.getDefaultDisplay();
 	}
+	
 
 	/*
 	 * The Callback for notifying the application when authorization succeeds or

@@ -15,7 +15,7 @@ public class ProductListActivity extends TracableActivity {
 		setContentView(R.layout.product_list);
 		
 		ForBossUtils.initTabHeader(this);
-		
+				
 		// Hide button
 		ImageButton hideProductListButton = (ImageButton) findViewById(R.id.hideButton);
 		hideProductListButton.setTag(this);

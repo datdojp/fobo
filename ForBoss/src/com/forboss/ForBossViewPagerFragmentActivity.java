@@ -39,6 +39,9 @@ import com.forboss.utils.ForBossUtils;
 import com.forboss.utils.URL;
 import com.j256.ormlite.dao.Dao;
 
+import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+
+
 public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	// class instance
 	private static ForBossViewPagerFragmentActivity instance;
@@ -73,11 +76,18 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 	// handlers
 	private Handler afterSyncArticleHandler;
 	private Handler afterPTRArticleHandler;
+	
+	private GoogleAnalyticsTracker tracker;
+	
 
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		super.setContentView(R.layout.main);
+		
+		// Init Google Analytics
+		tracker = GoogleAnalyticsTracker.getInstance();
+		tracker.startNewSession("UA-3013465-32", this);
 
 		// set the instance
 		instance = this;
@@ -146,6 +156,15 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 		};
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (tracker != null) {
+			tracker.stopSession();
+		}
+	}
+	
 	private void initArticleList() throws SQLException {
 		articleListWrapper = (ViewGroup) findViewById(R.id.articleListWrapper);
 		articleViewPagerIndicator = (ViewGroup) articleListWrapper
