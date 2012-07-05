@@ -116,6 +116,18 @@
                 android:id="@+id/htmlContent"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="100dp" >
+
+                <LinearLayout
+                    android:id="@+id/relatedArticles"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" >
+                    
+                </LinearLayout>
+            </HorizontalScrollView>
         </LinearLayout>
     </ScrollView>
 

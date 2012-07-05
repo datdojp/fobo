@@ -160,17 +160,20 @@ public class ForBossUtils {
 	 * @return the bitmap
 	 * @throws FileNotFoundException
 	 */
-	public static Bitmap loadBitmapFromInternalStorage(String fileName, ContextWrapper contextWrapper) throws FileNotFoundException {
-		FileInputStream fis = contextWrapper.openFileInput(fileName);
-		Bitmap bm;
+	public static Bitmap loadBitmapFromInternalStorage(String fileName, ContextWrapper contextWrapper) {
 		try {
-			bm = BitmapFactory.decodeStream(fis);
+			FileInputStream fis = contextWrapper.openFileInput(fileName);
+			Bitmap bm = BitmapFactory.decodeStream(fis);
+			return bm;
 		} catch (OutOfMemoryError e) {
-			Log.d("ForBossUtils", "Fail to load: " + fileName);
+			Log.d("ForBossUtils", "Out of mem: " + fileName);
+			e.printStackTrace();
+			return null;
+		} catch (FileNotFoundException e) {
+			Log.d("ForBossUtils", "File not found: " + fileName);
 			e.printStackTrace();
 			return null;
 		}
-		return bm;
 	}
 
 	public static Bitmap makeSquare(Bitmap rectangle) {
@@ -655,7 +658,12 @@ public class ForBossUtils {
 	}
 
 	public static void recycleBitmapOfImage(ImageView img, String tag) {
-		Bitmap oldBm = (Bitmap) img.getTag();
+		Bitmap oldBm = null;
+		if (img.getTag() instanceof Bitmap) {
+			oldBm = (Bitmap) img.getTag();
+		} else if (img.getTag() instanceof Map) {
+			oldBm = (Bitmap) ((Map)img.getTag()).get("bm");
+		}
 		if (oldBm != null) {
 			img.setImageBitmap(null);
 			img.setTag(null);
@@ -810,5 +818,10 @@ public class ForBossUtils {
 				}
 			}
 		});
+	}
+	
+	public static int getMaxRelatedArticles() {
+		String str = getConfig("max.related.articles");
+		return new Integer(str);
 	}
 }
