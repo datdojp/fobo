@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.forboss.ForBossViewPagerFragmentActivity;
+import com.forboss.MainActivity;
 import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
 import com.forboss.utils.ArticleListBuilder;
@@ -33,8 +34,8 @@ public class ArticlePictureLoadAsyncTask extends IntentService {
 			e1.printStackTrace();
 			return;
 		}
-		for(String aCate : ForBossUtils.getCategoryList()) {
-			List<Article> data = ForBossViewPagerFragmentActivity.cateDataMapping.get(aCate);
+		for(String aCate : ForBossUtils.getAllCategories()) {
+			List<Article> data = MainActivity.cateDataMapping.get(aCate);
 			if (data != null) {
 				for(Article anArticle : data) {
 					if (anArticle.getThumbnail() != null && anArticle.getPictureLocation() == null) {
@@ -55,7 +56,7 @@ public class ArticlePictureLoadAsyncTask extends IntentService {
 					}
 				}
 			}
-			ArticleListBuilder builder = ForBossViewPagerFragmentActivity.cateBuilderMapping.get(aCate);
+			ArticleListBuilder builder = MainActivity.cateBuilderMapping.get(aCate);
 			if (builder != null) {
 				builder.refresh();
 			}

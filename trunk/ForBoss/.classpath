@@ -14,6 +14,6 @@
 	<classpathentry kind="lib" path="libs/signpost-core-1.2.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="libs/comscore.jar"/>
-	<classpathentry kind="lib" path="D:/Projects/VietDev Solutions/X-Men for Boss/Android/src/ForBoss/libs/libGoogleAnalytics.jar"/>
+	<classpathentry kind="lib" path="libs/libGoogleAnalytics.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

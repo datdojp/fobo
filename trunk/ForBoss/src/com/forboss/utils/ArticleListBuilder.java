@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -17,14 +16,13 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.forboss.ArticleDetailActivity;
 import com.forboss.ForBossApplication;
-import com.forboss.ForBossViewPagerFragmentActivity;
+import com.forboss.MainActivity;
 import com.forboss.R;
 import com.forboss.custom.PullToRefreshListView;
 import com.forboss.custom.PullToRefreshListView.OnRefreshListener;
@@ -55,7 +53,7 @@ public class ArticleListBuilder {
 		ptrArticleList.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				ForBossViewPagerFragmentActivity.getInstance().syncArticleContent();
+				MainActivity.getInstance().syncArticleContent();
 			}
 		});
 		ptrArticleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -67,8 +65,11 @@ public class ArticleListBuilder {
 		});
 		ptrArticleListAdapter = new ArticleAdapter(context, ptrArticleListData);
 		ptrArticleList.setAdapter(ptrArticleListAdapter);
-		if (ForBossUtils.isSpecialCategory(this.category)) {
-			((MarginLayoutParams) ptrArticleList.getLayoutParams()).setMargins(0, 0, 0, 0);
+		//		if (ForBossUtils.isSpecialCategory(this.category)) {
+		if (ForBossUtils.belongsToGroup(this.category, ForBossUtils.GROUP_EVENT) 
+				|| ForBossUtils.belongsToGroup(this.category, ForBossUtils.GROUP_C360)) {
+//			((MarginLayoutParams) ptrArticleList.getLayoutParams()).setMargins(0, 0, 0, 0);
+			//TODO: deal with this
 		}
 
 		refreshHandler = new Handler() {
@@ -123,7 +124,9 @@ public class ArticleListBuilder {
 				if (isFavArticleList()) {
 					view = inflater.inflate(R.layout.event_item, null);
 				} else {
-					if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+					//					if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+					if (ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT) 
+							|| ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_C360)) {
 						view = inflater.inflate(R.layout.event_item, null);
 					} else {
 						view = inflater.inflate(R.layout.article_item, null);
@@ -134,10 +137,14 @@ public class ArticleListBuilder {
 			view.setTag(article);
 
 			// EVENT || 360
-			if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+//			if ( ForBossUtils.isSpecialCategory(article.getCategory()) ) {
+			if (ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT) 
+							|| ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_C360)) {
 				buildSpecialArticleView(view, article, 
-						ForBossUtils.getEventCategory().equals(article.getCategory()),//showTimeAndPlace 
-						ForBossUtils.getC360Category().equals(article.getCategory())//showBody
+//						ForBossUtils.getEventCategory().equals(article.getCategory()),//showTimeAndPlace 
+//						ForBossUtils.getC360Category().equals(article.getCategory())//showBody
+						ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT),//showTimeAndPlace 
+						ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_C360)//showBody
 						//!isFavArticleList(),//showDetailButton
 						//isFavArticleList()//showRemoveFavButton
 						);
@@ -199,13 +206,13 @@ public class ArticleListBuilder {
 			}
 
 			// set functional button
-//			ImageButton funtionalButton = (ImageButton) view.findViewById(R.id.funtionalButton);
-//			funtionalButton.setTag(article);
-//			if (showDetailButton) {
-//				funtionalButton.setImageResource(R.drawable.right_arrow);
-//			} else if (showRemoveFavButton) {
-//				funtionalButton.setImageResource(R.drawable.but_delete);
-//			}
+			//			ImageButton funtionalButton = (ImageButton) view.findViewById(R.id.funtionalButton);
+			//			funtionalButton.setTag(article);
+			//			if (showDetailButton) {
+			//				funtionalButton.setImageResource(R.drawable.right_arrow);
+			//			} else if (showRemoveFavButton) {
+			//				funtionalButton.setImageResource(R.drawable.but_delete);
+			//			}
 
 			setOnClickListener(view);
 		}

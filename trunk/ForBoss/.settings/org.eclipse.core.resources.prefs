@@ -1,9 +1,10 @@
-#Sat Jun 30 15:46:40 PDT 2012
+#Thu Jul 05 22:47:24 GMT+07:00 2012
 eclipse.preferences.version=1
 encoding//src/com/forboss/ArticleDetailActivity.java=UTF-8
 encoding//src/com/forboss/FavArticleListActivity.java=UTF-8
 encoding//src/com/forboss/ForBossApplication.java=UTF-8
 encoding//src/com/forboss/ForBossViewPagerFragmentActivity.java=UTF-8
+encoding//src/com/forboss/MainActivity.java=UTF-8
 encoding//src/com/forboss/api/ArticlePictureLoadAsyncTask.java=UTF-8
 encoding//src/com/forboss/api/ArticleService.java=UTF-8
 encoding//src/com/forboss/custom/PullToRefreshListView.java=UTF-8

@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Black.NoTitleBar" >
         <activity
-            android:name=".ForBossViewPagerFragmentActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -41,15 +41,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EventDetailActivity"
+            android:name=".PostActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".C360ListActivity"
+            android:name=".EventActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".EventListActivity"
+            android:name=".C360Activity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -60,7 +60,6 @@
             android:name=".FavArticleListActivity"
             android:screenOrientation="portrait" >
         </activity>
-        
 
         <service android:name=".api.ArticleService" >
         </service>

@@ -24,8 +24,8 @@ public class FavArticleListActivity extends TracableActivity {
 
 		// get list of favorite article
 		favData.clear();
-		for (String cate : ForBossViewPagerFragmentActivity.getInstance().cateDataMapping.keySet()) {
-			List<Article> data = ForBossViewPagerFragmentActivity.getInstance().cateDataMapping.get(cate);
+		for (String cate : MainActivity.cateDataMapping.keySet()) {
+			List<Article> data = MainActivity.cateDataMapping.get(cate);
 			if (data != null) {
 				for(Article article : data) {
 					if (article.isLike()) {

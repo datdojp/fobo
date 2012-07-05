@@ -30,6 +30,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.forboss.ForBossViewPagerFragmentActivity;
+import com.forboss.MainActivity;
 import com.forboss.api.exception.ServiceException;
 import com.forboss.data.model.Article;
 import com.forboss.data.utils.DatabaseHelper;
@@ -172,12 +173,12 @@ public class ArticleService extends IntentService {
 		}
 
 		if (!ForBossUtils.isNetworkAvailable()) {
-			Toast.makeText(ForBossViewPagerFragmentActivity.getInstance(), "Không có kết nối mạng. Không thể lấy dữ liệu từ server", Toast.LENGTH_SHORT).show();
+			Toast.makeText(MainActivity.getInstance(), "Không có kết nối mạng. Không thể lấy dữ liệu từ server", Toast.LENGTH_SHORT).show();
 //			ForBossUtils.alert(ForBossViewPagerFragmentActivity.getInstance(), "Không có kết nối mạng. Không thể lấy dữ liệu từ server");
 		} else {
 			isSyncing = true;
 			try {
-				List<String> categoryList = ForBossUtils.getCategoryList();
+				List<String> categoryList = ForBossUtils.getAllCategories();
 				for(String aCate : categoryList) {
 					category = aCate;
 					doSync();
@@ -190,6 +191,6 @@ public class ArticleService extends IntentService {
 			isSyncing = false;
 		}
 
-		ForBossViewPagerFragmentActivity.getInstance().refreshArticleList();
+		MainActivity.getInstance().refreshArticleList();
 	}
 }

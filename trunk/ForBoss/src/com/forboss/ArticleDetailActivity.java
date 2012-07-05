@@ -30,10 +30,8 @@ import com.forboss.sns.facebook.Utility;
 import com.forboss.sns.linkedin.LinkedIn;
 import com.forboss.utils.ForBossUtils;
 import com.forboss.utils.URL;
-import com.google.code.linkedinapi.client.oauth.LinkedInAccessToken;
-import com.j256.ormlite.dao.Dao;
-
 import com.google.android.apps.analytics.GoogleAnalyticsTracker;
+import com.j256.ormlite.dao.Dao;
 
 public class ArticleDetailActivity extends Activity {
 	private Article article;
@@ -67,7 +65,8 @@ public class ArticleDetailActivity extends Activity {
 		}
 
 		// Hide Time, Title, Thumbnail if this article is event
-		if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+//		if (article.getCategory().equals(ForBossUtils.getEventCategory())) {
+		if (ForBossUtils.belongsToGroup(article.getCategory(), ForBossUtils.GROUP_EVENT)) {
 			findViewById(R.id.imageClock).setVisibility(View.GONE);
 			findViewById(R.id.time).setVisibility(View.GONE);
 			findViewById(R.id.titleText).setVisibility(View.GONE);
@@ -175,7 +174,7 @@ public class ArticleDetailActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				((Activity) v.getContext()).finish();
-				ForBossViewPagerFragmentActivity.getInstance().navigateToFavArticleList();
+				MainActivity.getInstance().navigateToFavorite();
 			}
 		});
 		ImageButton facebookButton =  (ImageButton) bottomMenuWrapper.findViewById(R.id.facebookButton);

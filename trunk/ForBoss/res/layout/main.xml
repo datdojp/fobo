@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mainWrapper"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
@@ -8,70 +7,5 @@
     <include layout="@layout/intro" />
 
     <include layout="@layout/login" />
-
-    <include layout="@layout/tab_header" />
-
-    <include layout="@layout/header_line" />
-
-    <LinearLayout
-        android:id="@+id/articleListWrapper"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#000000"
-        android:orientation="vertical" >
-
-        <include layout="@layout/title_header" />
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-
-            <android.support.v4.view.ViewPager
-                android:id="@+android:id/viewpager"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
-
-            <LinearLayout
-                android:id="@+id/viewPagerIndicator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="horizontal" >
-            </LinearLayout>
-        </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/eventListWrapper"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#000000"
-        android:orientation="vertical" >
-
-        <include layout="@layout/title_header" />
-        <!--
-        <com.forboss.custom.PullToRefreshListView
-            android:id="@+id/eventList"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="#00000000"
-            android:cacheColorHint="#00000000"
-            android:divider="#00000000" />
-        -->
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/c360ListWrapper"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#000000"
-        android:orientation="vertical" >
-
-        <include layout="@layout/title_header" />
-    </LinearLayout>
-
-    <include layout="@layout/product_list" />
 
 </LinearLayout>
