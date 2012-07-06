@@ -308,6 +308,11 @@ public class PullToRefreshListView extends ListView{
 		return true;
 	}
 	
+	private boolean isDisablePull = false;
+	public void disablePull() {
+		isDisablePull = true;
+	}
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
 		if(lockScrollWhileRefreshing && state == State.REFRESHING){
@@ -343,6 +348,9 @@ public class PullToRefreshListView extends ListView{
 				if(previousY != -1){
 					float y = event.getY();
 					float diff = y - previousY;
+					if (diff > 0 && isDisablePull && getFirstVisiblePosition() == 0) {
+						break;
+					}
 					if(diff > 0) diff /= PULL_RESISTANCE;
 					previousY = y;
 
