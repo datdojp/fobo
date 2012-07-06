@@ -60,6 +60,7 @@ public class FavArticleListActivity extends TracableActivity {
 
 		ArticleListBuilder builder = new ArticleListBuilder();
 		favArticleListWrapper.addView(builder.build(this, getLayoutInflater(), favArticleListWrapper, favData, null));
+		builder.getPtrArticleList().disablePull();
 
 		// store data and builder
 		//		ForBossViewPagerFragmentActivity.cateBuilderMapping.put(cate, builder);
