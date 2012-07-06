@@ -188,7 +188,7 @@ public class MainActivity extends Activity {
 							}
 							
 							if (number > 0) {
-								AlertDialog.Builder	builder = new AlertDialog.Builder(getApplicationContext());
+								AlertDialog.Builder	builder = new AlertDialog.Builder(instance);
 								builder.setMessage("Xin chúc mừng đã là người đăng ký thứ " + number.toString() + ".")
 								.setPositiveButton("Close", new DialogInterface.OnClickListener() {
 									@Override
