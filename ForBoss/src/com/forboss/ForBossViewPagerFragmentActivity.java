@@ -170,6 +170,12 @@ public class ForBossViewPagerFragmentActivity extends FragmentActivity {
 			}
 		}
 	}
+
+	@Override
+	public void onBackPressed() {
+		finish();
+		MainActivity.getInstance().finish();
+	}
 	
 	
 }
