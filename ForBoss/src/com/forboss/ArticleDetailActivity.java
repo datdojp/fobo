@@ -128,6 +128,18 @@ public class ArticleDetailActivity extends Activity {
 		});
 		TextView categoryText = (TextView) findViewById(R.id.categoryText);
 		categoryText.setText(ForBossUtils.getConfig(article.getCategory()));
+		
+		ImageButton shareButton = (ImageButton) findViewById(R.id.shareButton);
+		shareButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+				sharingIntent.setType("text/plain");
+				sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "ForBoss - " + article.getTitle());
+				sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, article.getBody() + "\n\nLink: " + article.getLink());
+				startActivity(Intent.createChooser(sharingIntent, "Chia sẻ thông qua"));
+			}
+		});
 
 		// init like button
 		ImageButton likeButton = (ImageButton) findViewById(R.id.likeButton);
