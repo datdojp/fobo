@@ -298,7 +298,7 @@ public class ArticleDetailActivity extends Activity {
 	}
 
 	private void postToLinkedIn() {
-		linkedIn.client.postNetworkUpdate(article.getTitle());
+		linkedIn.client.postNetworkUpdate(article.getTitle() + "\n" + article.getBody() + "\nLink: " + article.getLink());
 	}
 
 	private void setViewText() {
