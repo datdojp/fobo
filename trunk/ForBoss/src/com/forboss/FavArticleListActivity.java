@@ -73,4 +73,9 @@ public class FavArticleListActivity extends TracableActivity {
 		return builder;
 	}
 
+	@Override
+	public void onBackPressed() {
+		finish();
+		MainActivity.getInstance().navigateToPost();
+	}
 }

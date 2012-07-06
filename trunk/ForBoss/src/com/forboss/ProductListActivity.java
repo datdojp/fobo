@@ -23,7 +23,16 @@ public class ProductListActivity extends TracableActivity {
 			@Override
 			public void onClick(View v) {
 				finish();
+				MainActivity.getInstance().navigateToPost();
 			}
 		});
 	}
+
+	@Override
+	public void onBackPressed() {
+		finish();
+		MainActivity.getInstance().navigateToPost();
+	}
+	
+	
 }
