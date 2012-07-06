@@ -171,19 +171,34 @@ public class MainActivity extends Activity {
 							e.printStackTrace();
 						}
 						if (success) {
+							boolean win = false;
+							try {
+								win = (Boolean) finalResult.get("win");
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							
+							Integer number = 0;
+							try {
+								number = (Integer) finalResult.get("number");
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							
+							if (number > 0) {
+								ForBossUtils.alert(getApplicationContext(), "Xin chúc mừng đã là người đăng ký thứ " + number.toString() + ".");
+							}
+							
 							loginLayoutWrapper.setVisibility(View.GONE);
 
-							SharedPreferences settings = getSharedPreferences(
-									APP_PREF, Context.MODE_PRIVATE);
+							SharedPreferences settings = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
 							SharedPreferences.Editor editor = settings.edit();
 							editor.putString(USER_EMAIL, getUserEmail());
 							editor.commit();
 							
 							navigateToPost();
 						} else {
-							ForBossUtils
-							.alert(getApplicationContext(),
-									"Xác nhận email thất bại. Xin hãy thử lại lần nữa.");
+							ForBossUtils.alert(getApplicationContext(), "Xác nhận email thất bại. Xin hãy thử lại lần nữa.");
 						}
 					}
 				};
