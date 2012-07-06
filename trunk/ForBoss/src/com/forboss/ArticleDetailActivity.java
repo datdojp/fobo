@@ -382,9 +382,11 @@ public class ArticleDetailActivity extends Activity {
 		WebView htmlContent = (WebView) findViewById(R.id.htmlContent);
 		htmlContent.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		htmlContent.getSettings().setLoadWithOverviewMode(true);
-		htmlContent.getSettings().setUseWideViewPort(true);
-		htmlContent.getSettings().setDefaultFontSize(32);
+//		htmlContent.getSettings().setUseWideViewPort(true);
+		htmlContent.getSettings().setDefaultFontSize(14);
 		htmlContent.getSettings().setLayoutAlgorithm(LayoutAlgorithm.NORMAL);
+		htmlContent.getSettings().setBuiltInZoomControls(true);
+		htmlContent.getSettings().setSupportZoom(true);
 		htmlContent
 				.loadDataWithBaseURL(
 						null,
