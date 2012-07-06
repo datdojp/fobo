@@ -9,7 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -186,17 +188,36 @@ public class MainActivity extends Activity {
 							}
 							
 							if (number > 0) {
-								ForBossUtils.alert(getApplicationContext(), "Xin chúc mừng đã là người đăng ký thứ " + number.toString() + ".");
-							}
-							
-							loginLayoutWrapper.setVisibility(View.GONE);
+								AlertDialog.Builder	builder = new AlertDialog.Builder(getApplicationContext());
+								builder.setMessage("Xin chúc mừng đã là người đăng ký thứ " + number.toString() + ".")
+								.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.dismiss();
+										
+										loginLayoutWrapper.setVisibility(View.GONE);
 
-							SharedPreferences settings = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
-							SharedPreferences.Editor editor = settings.edit();
-							editor.putString(USER_EMAIL, getUserEmail());
-							editor.commit();
-							
-							navigateToPost();
+										SharedPreferences settings = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+										SharedPreferences.Editor editor = settings.edit();
+										editor.putString(USER_EMAIL, getUserEmail());
+										editor.commit();
+										
+										navigateToPost();
+									}
+								});
+								AlertDialog alert = builder.create();
+								alert.show();
+							}
+							else {
+								loginLayoutWrapper.setVisibility(View.GONE);
+	
+								SharedPreferences settings = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE);
+								SharedPreferences.Editor editor = settings.edit();
+								editor.putString(USER_EMAIL, getUserEmail());
+								editor.commit();
+								
+								navigateToPost();
+							}
 						} else {
 							ForBossUtils.alert(getApplicationContext(), "Xác nhận email thất bại. Xin hãy thử lại lần nữa.");
 						}
