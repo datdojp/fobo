@@ -189,8 +189,16 @@ public class MainActivity extends Activity {
 							
 							if (number > 0) {
 								AlertDialog.Builder	builder = new AlertDialog.Builder(instance);
-								builder.setMessage("Xin chúc mừng đã là người đăng ký thứ " + number.toString() + ".")
-								.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+								
+								String message = "";
+								if (win == true) {
+									message = "Xin chúc mừng bạn đã là người đăng ký thứ " + number.toString() + " và may mắn trúng giải thưởng của chương trình. Hệ thống sẽ gởi email để xác nhận vào hộp thư bạn đã đăng ký.";
+								}
+								else {
+									message = "Xin chúc mừng bạn đã là người đăng ký thứ " + number.toString() + ".";
+								}
+								
+								builder.setMessage(message).setPositiveButton("Close", new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog, int which) {
 										dialog.dismiss();
@@ -219,7 +227,7 @@ public class MainActivity extends Activity {
 								navigateToPost();
 							}
 						} else {
-							ForBossUtils.alert(getApplicationContext(), "Xác nhận email thất bại. Xin hãy thử lại lần nữa.");
+							ForBossUtils.alert(instance, "Xác nhận email thất bại. Xin hãy thử lại lần nữa.");
 						}
 					}
 				};
