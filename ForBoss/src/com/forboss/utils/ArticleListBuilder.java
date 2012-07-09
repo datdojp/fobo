@@ -198,6 +198,7 @@ public class ArticleListBuilder {
 				TextView bodyText = (TextView) view.findViewById(R.id.bodyText);
 				bodyText.setVisibility(View.VISIBLE);
 				bodyText.setText(article.getBody());
+				bodyText.setHeight(105);
 			}
 
 			// set functional button

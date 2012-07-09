@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -83,6 +84,10 @@ public class MainActivity extends Activity {
 //					initArticleList();
 				if (isLoggin()) {
 					navigateToPost();
+					
+					if (_waitingDialog != null) {
+						_waitingDialog.dismiss();
+					}
 				}
 					syncArticlePicture();
 //				} catch (SQLException e) {
@@ -252,6 +257,16 @@ public class MainActivity extends Activity {
 	}
 
 	public void syncArticleContent() {
+		if (isSyncAtLoadingApp && isLoggin()) {
+			// Phong updated
+			_waitingDialog = new ProgressDialog(instance) {
+				@Override
+				public void onBackPressed() {};
+			};
+			_waitingDialog.setMessage("Đang cập nhật dữ liệu...");
+			_waitingDialog.show();
+		}
+
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this,
 				ArticleService.class);
 		this.startService(intent);
@@ -270,9 +285,10 @@ public class MainActivity extends Activity {
 	}
 
 	private boolean isSyncAtLoadingApp = true;
+	private ProgressDialog _waitingDialog = null;
 
 	public void refreshArticleList() {
-		if (isSyncAtLoadingApp) {
+		if (isSyncAtLoadingApp) {		
 			Message message = afterSyncAtLoadingAppHandler.obtainMessage();
 			afterSyncAtLoadingAppHandler.sendMessage(message);
 			isSyncAtLoadingApp = false;
